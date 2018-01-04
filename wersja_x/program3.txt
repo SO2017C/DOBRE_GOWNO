@@ -1,0 +1,7 @@
+MO A 10
+MO B -3
+MO C 2
+CF stanRej 30
+ZP stanRej
+CP stanRej
+HT
