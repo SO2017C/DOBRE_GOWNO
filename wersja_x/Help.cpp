@@ -106,8 +106,28 @@ void HELP_CLASS::SETFACL_H()
 	std::cout << "\tparam5 - name of the file that you want to set the file access control list." << std::endl << std::endl;
 }
 
+/// MEMORY
+void HELP_CLASS::DISPLAYMEMORY_H()
+{
 
+}
 
+/// PROCESS
+void HELP_CLASS::CREATEPROCESS_H()
+{
+	std::cout << "Usage: cp [param1] [param2] [param3]" << std::endl << std::endl;
+	std::cout << "Options: " << std::endl;
+	std::cout << "\tparam1 - ID of the father process." << std::endl;
+	std::cout << "\tparam2 - amount of bytes dedicated for that process in memory." << std::endl;
+	std::cout << "\tparam3 - name of the .txt file with the program." << std::endl << std::endl;
+}
+
+void HELP_CLASS::SHOWPCB_H()
+{
+	std::cout << "Usage: showpcb [param1] " << std::endl << std::endl;
+	std::cout << "Options: " << std::endl;
+	std::cout << "\tparam1 - name of the process that you want to check the pcb." << std::endl << std::endl;
+}
 
 ///MY
 void HELP_CLASS::HELP_F()

@@ -22,10 +22,12 @@ private:
 	enum spis_funkcji {
 		CREATEFILE, READFILE, WRITEFILE, DELETEFILE, RENAMEFILE, FORMATDISK, DISPLAYDISK,
 		USERADD, USERDEL, DISPLAYUSERS, GROUPADD, GROUPDEL, DISPLAYGROUPS, SWITCHUSER, USERMOD, GETFACL, SETFACL, DISPLAYACLS,
-		CREATEPROCESS,
+		DISPLAYMEMORY,
+		CREATEPROCESS, SHOWTREE, SHOWPCB,
+		GO,
 		HELP, EXIT, OTHER, CREDITS
 	};			// enumerator w ktorym umieszcze wszystkie nazwy funkcji, wiadomo: CF = 0, RF = 1... etc.
-				// (ew jeszcze mamy OTHER, ktory wywoluje sie przy nieznalezieniu danej funkcji - przesylamy wiec to do interpretera)
+				// (ew jeszcze mamy OTHER, ktory wywoluje sie przy nieznalezieniu danej funkcji
 
 	HELP_CLASS help_class;
 
@@ -40,14 +42,12 @@ private:
 	bool are_there_letters(const std::string &s);				// sprawdzam czy w danym stringu sa znaki specjalne / liczby	||||| wtedy nie przyjmujemy go (zwracamy false)
 	bool are_there_numbers(const std::string &s);				// sprawdzamy czy w danym stringu sa litery / znaki specjalne	||||| wtedy nie przyjmujemy go (zwracamy false)
 	bool is_there_number(const char &c);
-	void segregate();											// jezeli mamy 3 parametry i wsrod nich sa dane liczbowe, to wtedy umieszczamy je na 3 miejscu
 	void SHELL::letters_to_upper(std::string &s);				// zmieniamy literki, np. aBcdEfGHiJ tak aby wszystkie byly wielkie -> ABCDEFGHIJ
 
 
 																/* POBIERANIE DANYCH ORAZ PRZESYLANIE DALEJ */
 	void command();												// funkcja wpisania komendy przez uzytkownika, sprawdzenie jej poprawnosci oraz sformatowanie jej.
 	void run(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline,HDD &dysk);													// nowa glowna funkcja
-	void login();
 
 	/* METODY POMOCNICZE */
 	void error_r();												// wypisanie bledu, ze niepoprawna funkcja badz mala ilosc parametrow

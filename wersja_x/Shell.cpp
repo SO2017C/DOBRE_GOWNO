@@ -27,8 +27,14 @@ SHELL::spis_funkcji SHELL::str_to_int(const std::string & Funkcja)
 	else if (Funkcja == "GETFACL") return GETFACL;
 	else if (Funkcja == "SETFACL") return SETFACL;
 	else if (Funkcja == "DA") return DISPLAYACLS;
+	/// MEMORY
+	else if (Funkcja == "DMEMORY") return DISPLAYMEMORY;
 	/// PROCESS
 	else if (Funkcja == "CP") return CREATEPROCESS;
+	else if (Funkcja == "DTREE") return SHOWTREE;
+	else if (Funkcja == "DPCB") return SHOWPCB;
+	/// INTERPRETER
+	else if (Funkcja == "GO") return GO;
 	/// MY
 	else if (Funkcja == "HELP") return HELP;
 	else if (Funkcja == "CREDITS")return CREDITS;
@@ -59,11 +65,6 @@ bool SHELL::is_there_number(const char & c)
 		return false;
 	else
 		return true;
-}
-void SHELL::segregate()
-{
-	if (are_there_numbers(command_line[1])) // jesli cyfry sa w drugim miejscu command_line (przyp. 1 - funkcja, 2 - parametr, 3 paramter), to przekladamy je na trzecie miejsce
-		std::swap(command_line[1], command_line[2]);
 }
 void SHELL::letters_to_upper(std::string &s)
 {
@@ -105,8 +106,6 @@ void SHELL::command()
 	else if (are_there_letters(command_line[0]))                    // jesli w pierwszym wyrazie sa literki
 	{
 		letters_to_upper(command_line[0]);                          // zmieniamy je na duze litery: cF -> CF / cf -> CF
-		if (command_line.size() == 3)                               // rowniez jesli wielkosc komendy jest rowna 3
-			segregate();                                            // segregujemy, tak ze int zawsze jest na 3 pozycji --- wytlumaczenie: ping -n 10 8.8.8.8 == ping 8.8.8.8 -n 10 |
 	}                                                               // w CMD kolejnosc nie ma znaczenia, rowniez chcialem aby moj shell byl podobny
 	else                                                            // jezeli ktos wpisze np. tylko: ";)" "$$" to wtedy command_line.size() == 0, czyli wywolujemy ze ma podac w 1. parametrze funkcje
 	{
@@ -124,7 +123,7 @@ void SHELL::run(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &plani
 		{
 			command();                                           // wywolanie funkcji pobierajacej komende od uzytkownika
 		}
-		switch_case(inter,mm,pcb,planista,tree,pipeline,dysk);                                           // w przypadku komendy, ktora wydaje sie w miare "poprawna" wywolujemy switch_case()
+		switch_case(inter, mm, pcb, planista, tree, pipeline, dysk);                                           // w przypadku komendy, ktora wydaje sie w miare "poprawna" wywolujemy switch_case()
 
 	} while (running);                                           // program bedzie sie wykonywal w nieskonczonosc dopoki uzytkownik go nie przerwie
 }
@@ -134,19 +133,20 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	{
 
 		/// DYSK
+		
 	case CREATEFILE:
 	{
-		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))				// help							
+		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))              // help                        
 		{
 			help_class.CREATEFILE_H();
 		}
-		else if (command_line.size() == 3 && are_there_numbers(command_line[2]))													// stworz plik bez tekstu
+		else if (command_line.size() == 3 && are_there_numbers(command_line[2]))                                                    // stworz plik bez tekstu
 		{
 			DISK.create_file(command_line[1], std::stoi(command_line[2]));
 			permissions.createACL(command_line[1]);//TU IF CZY SIE UDALO STWORZYC!
 												   //uprawnienia.getfacl(command_line[1]);
 		}
-		else if (command_line.size() >= 4 && are_there_numbers(command_line[2]))													// stworz plik z tekstem
+		else if (command_line.size() >= 4 && are_there_numbers(command_line[2]))                                                    // stworz plik z tekstem
 		{
 			std::string tekst;
 			for (int i = 3; i < command_line.size(); i++)
@@ -156,20 +156,28 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 				else
 					tekst += command_line[i] += ' ';
 			}
-			if (std::stoi(command_line[2]) >= tekst.size())
+			if (tekst.at(0) == '"'&&tekst.at(tekst.size() - 1) == '"')
 			{
+				std::string wpisz(tekst.begin() + 1, tekst.end() - 1);
+				if (std::stoi(command_line[2]) >= wpisz.size())
+				{
 
-				DISK.create_file(command_line[1], std::stoi(command_line[2]));
-				DISK.write_file(command_line[1], tekst, 0);
-				permissions.createACL(command_line[1]);//TU IF CZY SIE UDALO STWORZYC!
-													   //uprawnienia.getfacl(command_line[1]);
+					DISK.create_file(command_line[1], std::stoi(command_line[2]));
+					permissions.createACL(command_line[1]);
+					DISK.write_file(command_line[1], wpisz, 0);
+				}
+				else
+				{
+					std::cout << "File couldn't be created." << std::endl;
+					std::cout << "The amount of characters you typed," << std::endl;
+					std::cout << "exceeded the amount that disk dedicated for that file" << std::endl;
+				}
 			}
 			else
 			{
-				std::cout << "File couldn't be created." << std::endl;
-				std::cout << "The amount of characters you typed," << std::endl;
-				std::cout << "exceeded the amount that disk dedicated for that file" << std::endl;
+				help_class.HELP_F();
 			}
+
 		}
 		else
 		{
@@ -203,43 +211,49 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	}
 	case WRITEFILE:
 	{
-		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))				// help							
+		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))              // help                        
 		{
 			help_class.WRITEFILE_H();
 		}
-		else if (command_line.size() >= 3)													               // stworz plik z tekstem
-		{ // WF test troll
+		else if (command_line.size() >= 3)                                                                 // stworz plik z tekstem
+		{
 			std::string tekst;
-			// if ma uprawnienia
-			for (int i = 2; i < command_line.size(); i++)
+			if (permissions.write_permission(command_line[1])==true)
 			{
-				if (i == command_line.size() - 1)
-					tekst += command_line[i];
-				else
-					tekst += command_line[i] += ' ';
-			}
-
-			if (is_there_number(tekst.at(tekst.size() - 1))) // jesli jest wskaznik
-			{
-				if (tekst.at(0) == '"'&&tekst.at(tekst.size() - 2))
+				for (unsigned int i = 2; i < command_line.size(); i++)
 				{
-					char liczba = tekst[tekst.size() - 1];
-					std::string wpisz(tekst.begin() + 1, tekst.end() - 3);
-					DISK.write_file(command_line[1], wpisz, liczba - 48);
+					if (i == command_line.size() - 1)
+						tekst += command_line[i];
+					else
+						tekst += command_line[i] += ' ';
+				}
+
+				if (is_there_number(tekst.at(tekst.size() - 1))) // jesli jest wskaznik
+				{
+					if (tekst.at(0) == '"'&&tekst.at(tekst.size() - 3) == '"')
+					{
+						char liczba = tekst[tekst.size() - 1];
+						std::string wpisz(tekst.begin() + 1, tekst.end() - 3);
+						DISK.write_file(command_line[1], wpisz, liczba - 48);
+					}
+				}
+				else // bez wskaznika
+				{
+					if (tekst.at(0) == '"'&&tekst.at(tekst.size() - 1) == '"')
+					{
+						std::string wpisz(tekst.begin() + 1, tekst.end() - 1);
+						DISK.write_file(command_line[1], wpisz, 0);
+					}
+					else
+					{
+						help_class.HELP_F();
+					}
 				}
 			}
-			else // bez wskaznika
+			else
 			{
-				std::string wpisz(tekst.begin() + 1, tekst.end() - 1);
-				DISK.write_file(command_line[1], wpisz, 0);
+				std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to change content in that file" << std::endl;
 			}
-
-			//else
-			//{
-			//	std::cout << "File couldn't be created." << std::endl;
-			//	std::cout << "The amount of characters you typed," << std::endl;
-			//	std::cout << "exceeded the amount that disk dedicated for that file" << std::endl;
-			//}
 		}
 		else
 		{
@@ -261,7 +275,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			}
 			else
 			{
-				std::cout << "aa" << std::endl;
+				std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to delete that file" << std::endl;
 			}
 		}
 		else
@@ -312,7 +326,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		break;
 	}
-	/// ACL
+		
+		/// ACL
+		
 	case USERADD:
 	{
 		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))
@@ -440,12 +456,10 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		else if (command_line.size() == 3)
 		{
 			permissions.log_out_and_in(command_line[1], command_line[2]);
-			system("cls");
 		}
 		else if (command_line.size() == 2)
 		{
 			permissions.log_out_and_in(command_line[1], "");
-			system("cls");
 		}
 		else
 		{
@@ -498,38 +512,25 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			(command_line[2].at(0) == 'u' || command_line[2].at(0) == 'g')
 			)
 		{
-			int licznik = 0;
-			// todo: bez sensu, zmien
-			for (int i = 0; i < command_line[2].size(); i++)
-			{
-				if (command_line[2].at(i) == ':') licznik++;
-			}
 
-			if (licznik == 2)
+			int poz_dwu = command_line[2].size() - 2; // u:jan:7 command_line.size()-2 -> ':'
+			if (command_line[2].at(1) == ':' && command_line[2].at(poz_dwu) == ':')
 			{
-				int poz_dwu = command_line[2].size() - 2; // u:jan:7 command_line.size()-2 -> ':'
-				if (command_line[2].at(poz_dwu) == ':')
+
+				if (command_line[2].at(command_line[2].size() - 1) == '0' ||
+					command_line[2].at(command_line[2].size() - 1) == '1' ||
+					command_line[2].at(command_line[2].size() - 1) == '2' ||
+					command_line[2].at(command_line[2].size() - 1) == '3' ||
+					command_line[2].at(command_line[2].size() - 1) == '4' ||
+					command_line[2].at(command_line[2].size() - 1) == '5' ||
+					command_line[2].at(command_line[2].size() - 1) == '6' ||
+					command_line[2].at(command_line[2].size() - 1) == '7')
+
 				{
+					char right = command_line[2].at(command_line[2].size() - 1);
+					command_line[2].resize(command_line[2].size() - 2);
+					permissions.setfacl(command_line[1].at(1), command_line[2], right, command_line[3]);
 
-					if (command_line[2].at(command_line[2].size() - 1) == '0' ||
-						command_line[2].at(command_line[2].size() - 1) == '1' ||
-						command_line[2].at(command_line[2].size() - 1) == '2' ||
-						command_line[2].at(command_line[2].size() - 1) == '3' ||
-						command_line[2].at(command_line[2].size() - 1) == '4' ||
-						command_line[2].at(command_line[2].size() - 1) == '5' ||
-						command_line[2].at(command_line[2].size() - 1) == '6' ||
-						command_line[2].at(command_line[2].size() - 1) == '7'
-						)
-
-					{
-						char right = command_line[2].at(command_line[2].size() - 1);
-						command_line[2].resize(command_line[2].size() - 2);
-						permissions.setfacl(command_line[1].at(1), command_line[2], right, command_line[3]);
-					}
-					else
-					{
-						help_class.HELP_F();
-					}
 				}
 				else
 				{
@@ -541,8 +542,14 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			(command_line[1] == "-m" || command_line[1] == "-x") &&
 			(command_line[2].at(0) == 'm' || command_line[2].at(0) == 'o')
 			)
-		{// pora?ka totalna ||| setfacl[0] -m[1] u:user:7[2] / m:2 test[3]
-			if (command_line[2].at(command_line[2].size() - 2) == ':')
+		{
+			int licznik_dwu = 0;
+			for (int i = 0; i < command_line[2].size(); i++)
+			{
+				if (command_line[2].at(i) == ':')
+					licznik_dwu++;
+			}
+			if (command_line[2].at(command_line[2].size() - 2) == ':' && licznik_dwu == 1)
 			{
 				if (command_line[2].at(command_line[2].size() - 1) == '0' ||
 					command_line[2].at(command_line[2].size() - 1) == '1' ||
@@ -551,9 +558,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 					command_line[2].at(command_line[2].size() - 1) == '4' ||
 					command_line[2].at(command_line[2].size() - 1) == '5' ||
 					command_line[2].at(command_line[2].size() - 1) == '6' ||
-					command_line[2].at(command_line[2].size() - 1) == '7'
-					)
-
+					command_line[2].at(command_line[2].size() - 1) == '7')
 				{
 					char right = command_line[2].at(command_line[2].size() - 1);
 					command_line[2].resize(command_line[2].size() - 2);
@@ -564,6 +569,11 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 					help_class.HELP_F();
 				}
 			}
+			else
+			{
+				help_class.HELP_F();
+			}
+
 		}
 		else
 		{
@@ -585,22 +595,85 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 
 		break;
 	}
+		
+	/// MEMORY
+	case DISPLAYMEMORY:
+	{
+		if (command_line.size() == 2 && command_line[1] == "/?")
+		{
+			help_class.DISPLAYMEMORY_H();
+		}
+		else if (command_line.size() == 1)
+		{
+			mm.showPMemory();
+		}
+		else if (command_line.size() == 3 && are_there_numbers(command_line.at(1)) && are_there_numbers(command_line.at(2)))
+		{
+			mm.showPMemory(std::stoi(command_line.at(1)),std::stoi(command_line.at(2)));
+		}
+		else
+		{
+			help_class.HELP_F();
+		}
+		break;
+		
+	}
+
 	/// PROCESS
 	case CREATEPROCESS:
 	{
-		std::string t = "p2";
-	/*	std::cout<<command_line[1]<<" "<<command_line[2]<<"*/ 
-		tree.Fork_1(&tree.Get_process(1), command_line[1], command_line[3], mm, std::stoi(command_line[2]));
-		tree.Fork(&tree.Get_process(1),t, mm, 30);
-		tree.Display_tree();
-		tree.Display_PCB(mm, &tree.Get_process(2));
-		tree.Display_PCB(mm, &tree.Get_process(3));
-		planista.check(pcb, tree);
-		while (pcb.State == Running && pcb.PID != 1)
+		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))
 		{
-			inter.WykonajProgram(mm, pcb, planista, tree, pipeline, dysk);
+			help_class.CREATEPROCESS_H();
 		}
-		//tree.Fork_1(&tree.Pname, "p1", "program1.txt", mm, 60);
+		else if (command_line.size()==4 && (are_there_numbers(command_line.at(1)) && are_there_numbers(command_line.at(2))))
+		{
+			try
+			{
+				tree.Fork(&tree.Get_process(std::stoi(command_line[1])), command_line[3], mm, std::stoi(command_line[2]));
+			}
+			catch (int i)
+			{
+				if (i == 2) std::cout << "There's no process with the " << command_line[2] << " ID" << std::endl;
+			}
+		}
+		else
+		{
+			help_class.HELP_F();
+		}
+		break;
+	}
+	case SHOWTREE:
+	{
+		tree.Display_tree();
+		break;
+	}
+	case SHOWPCB:
+	{
+		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))
+		{
+			help_class.SHOWPCB_H();
+		}
+		else if (command_line.size() == 2 && are_there_numbers(command_line.at(1)))
+		{
+			try
+			{
+				tree.Display_PCB(mm, &tree.Get_process(std::stoi(command_line[1])));
+			}
+			catch(int i)
+			{
+				if (i == 0) std::cout << "You cannot look into INIT, it's our's company secret" << std::endl;
+				else if (i == 1) std::cout << "There is not a process with the " << command_line.at(1) << " ID" << std::endl;
+			}
+		}
+		break;
+	}
+	// case SHOWPROCESSES:
+
+	/// INTERPRETER
+	case GO:
+	{
+		inter.WykonajProgram(mm, pcb, planista, tree, pipeline, dysk);
 		break;
 	}
 	/// MY
@@ -620,11 +693,8 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		break;
 	}
 	case OTHER:
-	{ 
-
-		inter.WykonajProgram(mm, pcb, planista, tree, pipeline,dysk);
-																													// interpreter.COSTAM(command_line);
-		                                                                                               // jezeli nie, to wywoluje metode error_r();
+	{
+		error_r();
 		break;
 	}
 
@@ -702,7 +772,7 @@ void SHELL::boot() // wyswietlenie loga
 	std::cin.get();
 	system("cls");
 
-	std::cout << "SOkolowsky [Version 0.5.530]" << std::endl;
+	std::cout << "SOkolowsky [Version 0.10.877]" << std::endl;
 	std::cout << "<c> 2018 SOkolowsky Project Group. Wszelkie prawa zastrzezone." << std::endl;
 }
 void SHELL::credits()
@@ -799,11 +869,11 @@ void SHELL::are_you_sure()
 }
 
 /* KONSTRUKTOR */
-SHELL::SHELL(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline,HDD &dysk)
+SHELL::SHELL(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline, HDD &dysk)
 {
 	running = true;
 	boot(); // wyswietlenie loga
-	run(inter,mm,pcb,planista,tree,pipeline,dysk);
+	run(inter, mm, pcb, planista, tree, pipeline, dysk);
 }
 
 

@@ -20,6 +20,13 @@ public:
 	void GETFACL_H();
 	void SETFACL_H();
 
+	///MEMORY
+	void DISPLAYMEMORY_H();
+
+	/// PROCESS
+	void CREATEPROCESS_H();
+	void SHOWPCB_H();
+
 	/// MY
 	void HELP_F();
 };
