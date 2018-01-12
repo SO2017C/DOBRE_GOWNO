@@ -84,4 +84,18 @@
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="program1.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="program2.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="program3.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+    <Text Include="program10.txt">
+      <Filter>Resource Files</Filter>
+    </Text>
+  </ItemGroup>
 </Project>

@@ -136,6 +136,12 @@
     <ClInclude Include="Shell.h" />
     <ClInclude Include="Synchronization.h" />
   </ItemGroup>
+  <ItemGroup>
+    <Text Include="program1.txt" />
+    <Text Include="program10.txt" />
+    <Text Include="program2.txt" />
+    <Text Include="program3.txt" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

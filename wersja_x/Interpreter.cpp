@@ -16,6 +16,7 @@
 		rejC = pcb.Reg3;
 		rejD = pcb.Reg4;
 		liczRoz = pcb.Command_counter;
+
 	}
 
 
@@ -40,6 +41,7 @@
 		pcb.Reg4 = rejD;
 		pcb.Command_counter = liczRoz;
 		pcb.CPU += liczRoz;                                      // Damian!!!!!!!! dodaje sobie CPU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+
 	}
 
 	std::string interpreter::pobierzRozkaz(MemoryManager &mm, PCB &pcb)
@@ -55,31 +57,27 @@
 	void interpreter::WykonajProgram(MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline, HDD &dysk)
 	{
 		/////////////////////////////////////
+
 		PobierzRejestry(planista, pcb, tree);
-		//StanRej();
 		std::string operacja;
 		operacja.clear();
 		operacja = pobierzRozkaz(mm, pcb);
-		////planista.wykonanie_rozkazu(operacja.size());
-		std::cout << "Rozkaz: " << operacja; //<< std::endl;
+		std::cout << "Rozkaz: " << operacja << " "; 
 		std::string rej1 = " ", rej2 = " ";
-
 		int liczba = 0;
 
 		///////////////////////////////////// dodawanie 
 
 		if (operacja == "AD")
 		{
-
 			rej1 = pobierzRozkaz(mm, pcb);
-			////planista.wykonanie_rozkazu(rej1.size());
 			rej2 = pobierzRozkaz(mm, pcb);
-			////planista.wykonanie_rozkazu(rej2.size());
-
-			if (rej2 != "A" && rej2 != "B" && rej2 != "C" && rej2 != "D")
+			std::cout << rej1 << " " << rej2 << std::endl;
+			if (rej2 != "A" && rej2 != "B" && rej2 != "C" && rej2 != "D" )
 			{
 				liczba = stoi(rej2);
 			}
+
 			//////
 
 			if (rej1 == "A" && liczba != 0)
@@ -116,6 +114,7 @@
 			{
 				rejB += rejB;
 			}
+
 			///////////////////
 			if (rej1 == "C" && liczba != 0)
 			{
@@ -141,11 +140,10 @@
 		{
 
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
 			rej2 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej2.size());
+			std::cout << rej1 << " " << rej2 << std::endl;
 
-			if (rej2 != "A" && rej2 != "B" && rej2 != "C") liczba = stoi(rej2);
+			if (rej2 != "A" && rej2 != "B" && rej2 != "C" && rej2 != "D" ) liczba = stoi(rej2);
 
 			/////
 
@@ -206,9 +204,8 @@
 		if (operacja == "MU")
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
 			rej2 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej2.size());
+			std::cout << rej1 << " " << rej2 << std::endl;
 
 			if (rej2 != "A" && rej2 != "B" && rej2 != "C") liczba = stoi(rej2);
 
@@ -271,11 +268,10 @@
 		if (operacja == "DV")
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
 			rej2 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej2.size());
+			std::cout << rej1 << " " << rej2 << std::endl;
 
-			if (rej2 != "A" && rej2 != "B" && rej2 != "C") liczba = stoi(rej2);
+			if (rej2 != "A" && rej2 != "B" && rej2 != "C" && rej2!="D") liczba = stoi(rej2);
 
 			/////
 
@@ -335,10 +331,9 @@
 		/////////////////////////////////////// zapis wartoœci do rejestru 
 		if (operacja == "MO")
 		{
-			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
+			rej1 = pobierzRozkaz(mm, pcb);			
 			rej2 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej2.size());
+			std::cout << rej1 << " " << rej2 << std::endl;
 
 			if (rej2 != "A" && rej2 != "B" && rej2 != "C" && rej2 != "D") liczba = stoi(rej2);
 
@@ -388,6 +383,18 @@
 			{
 				rejD = rejA;
 			}
+			else if (rej1 == "D" && rej2 == "B")
+			{
+				rejD = rejB;
+			}
+			else if (rej1 == "D" && rej2 == "C")
+			{
+				rejD = rejC;
+			}
+			else if (rej1 == "D" && liczba != 0)
+			{
+				rejD = liczba;
+			}
 
 			StanRej();
 			zapiszRejestry(pcb);
@@ -397,7 +404,7 @@
 		if (operacja == "IC")
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
+			std::cout << rej1 << std::endl;
 			if (rej1 == "A")
 				rejA++;
 			if (rej1 == "B")
@@ -413,7 +420,7 @@
 		if (operacja == "DC")
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
+			std::cout << rej1 << std::endl;
 			if (rej1 == "A")
 				rejA--;
 			if (rej1 == "B")
@@ -436,11 +443,10 @@
 		{
 
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
 			rej2 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej2.size());
+			std::cout << rej1 << " " << rej2 << std::endl;
 			liczba = stoi(rej2);
-			//rej2 = pobierzRozkaz(mm);
+
 			if (rej1 == "A");
 			{
 				rejA = stoi(mm.Get(&pcb, liczba));
@@ -453,10 +459,37 @@
 			{
 				rejC = stoi(mm.Get(&pcb, liczba));
 			}
+			if (rej1 == "D")
+				rejD = stoi(mm.Get(&pcb, liczba));
 
 			StanRej();
 			zapiszRejestry(pcb);
 
+		}
+		/////////////////////////////////////////zapis wartosci do pamiêci
+
+		if (operacja == "MR")
+		{
+			rej1 = pobierzRozkaz(mm, pcb); //adres gdzie chcemy zapisaæ
+			rej2 = pobierzRozkaz(mm, pcb); // co chcemy zapisaæ 
+			liczba = stoi(rej1);
+			if (rej2 == "A")
+			{
+
+			}
+			else if (rej2 == "B")
+			{
+
+			}
+			else if (rej2 == "C")
+			{
+
+			}
+			else if (rej2 == "D")
+			{
+
+			}
+			
 		}
 
 
@@ -465,28 +498,28 @@
 		if (operacja == "JP") //skok do adresu
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
+			std::cout << rej1 << std::endl;
 			liczRoz = stoi(rej1);
 
 			StanRej();
 			zapiszRejestry(pcb);
+
 		}
 		//////
 
 		if (operacja == "JM") // skok do pamiêci pod warunkiem 
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
 			int adres = stoi(rej1);
-			//rej2 = pobierzRozkaz(mm, pcb);
-			////planista.wykonanie_rozkazu(rej2.size());
+			std::cout << rej1 << std::endl;
+			
 			if (rejD >= 0)
 			{
 				liczRoz = adres;
 			}
-
-			StanRej();
 			rejD--;
+			StanRej();
+			
 			zapiszRejestry(pcb);
 
 
@@ -517,8 +550,7 @@
 		{
 			int id;
 			id = stoi(pobierzRozkaz(mm, pcb));
-			//planista.wykonanie_rozkazu(sizeof(id));
-			pipeline.deletePipe(tree.Get_process(id));
+			//pipeline.deletePipe(tree.Get_process(id));
 			StanRej();
 			zapiszRejestry(pcb);
 		}
