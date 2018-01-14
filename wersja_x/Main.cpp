@@ -15,6 +15,6 @@ int main() {
 	tree.F_process = NULL;
 	
 	mm.start();
-	//Init->page_table = mm.createPageTable(0, 1);
+	//Init->page_table = mm.createPageTable(16, 1);
 	SHELL shell(interp,mm,pcb,plan,tree,pipeline,disk);
 }

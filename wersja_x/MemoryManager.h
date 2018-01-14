@@ -113,7 +113,7 @@ public:
 	int LoadProgram(std::string path, int mem, int PID);
 
 	//WRITE TO MEMORY
-	int Write(int adress, int PID, char ch, std::vector<PageTableData> *page_table);
+	int Write(PCB *process, int adress, std::string data);
 
 	//Pobiera rozkaz z danego adresu
 	std::string Get(PCB *process, int LR);

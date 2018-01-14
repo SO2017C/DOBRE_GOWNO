@@ -132,6 +132,11 @@ int MemoryManager::LoadProgram(std::string path, int mem, int PID) {
 	std::vector<Page> pagevec; // vector zawierajacy stronice do dodania
 	file.open(path, std::ios::in);
 
+	if (!file.is_open()) {
+		//std::cout << "Nie moge otworzyc pliku" << std::endl;
+		return -1;
+	}
+
 	//std::cout << "Czytam program o nazwie "<<path<<std::endl;
 	while (std::getline(file, str)) {
 		//dodaje spacje zamiast konca lini
@@ -157,7 +162,7 @@ int MemoryManager::LoadProgram(std::string path, int mem, int PID) {
 	str.clear();
 
 	//Jezeli przydzielono za malo pamieci wywalam blad
-	if (mem < 16 * pagevec.size()) {
+	if (pages * 16 < 16 * pagevec.size()) {
 		std::cout << "Przydzielono za malo pamieci programowi";
 		return -1;
 	}
@@ -258,23 +263,25 @@ void MemoryManager::Remove(int PID) {
 	}
 }
 
-int MemoryManager::Write(int adress, int PID, char ch, std::vector<PageTableData> *page_table) {
-	int Frame = 1;
+int MemoryManager::Write(PCB *process, int adress, std::string data) {
 	int stronica = adress / 16;
+	std::string str;
 
-	std::string str = PageFile[PID].at(stronica).data;
-	if (str[(stronica * 16 - adress)* -1] == ' ') {
-		//sprawdzenie czy stronica jest w pamieci
-		if (page_table->at(stronica).bit == 1)
-			Frame = page_table->at(stronica).frame;
-		else
-			Frame = LoadtoMemory(PageFile[PID].at(stronica), stronica, PID, page_table);
-
-		//wpisanie do pamieci
-		RAM[Frame * 16 + adress - (16 * stronica)] = ch;
-	}
-	else
+	if (adress + data.size() - 1 > process->page_table->size() * 16 - 1 || adress < 0) {
+		std::cout << "Przekroczona zakres dla tego procesu" << std::endl;
 		return -1;
-}
+	}
 
+	for (int i = 0; i < data.size(); i++) {
+		stronica = (adress + i) / 16;
+
+		if (process->page_table->at(stronica).bit == 0)
+			LoadtoMemory(PageFile[process->PID][stronica], stronica, process->PID, process->page_table);
+
+		RAM[process->page_table->at(stronica).frame * 16 + adress + i - (16 * stronica)] = data[i];
+		FrameOrder(process->page_table->at(stronica).frame);
+	}
+
+	return 1;
+}
 
