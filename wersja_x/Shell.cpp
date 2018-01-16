@@ -626,11 +626,11 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		{
 			help_class.CREATEPROCESS_H();
 		}
-		else if (command_line.size()==4 && (are_there_numbers(command_line.at(1)) && are_there_numbers(command_line.at(2))))
+		else if (command_line.size()==5 && (are_there_numbers(command_line.at(1)) && are_there_numbers(command_line.at(2))))
 		{
 			try
 			{
-				tree.Fork(&tree.Get_process(std::stoi(command_line[1])), command_line[3], mm, std::stoi(command_line[2]));
+				tree.Fork_1(&tree.Get_process(std::stoi(command_line[1])),command_line[3], command_line[4], mm, std::stoi(command_line[2]));
 			}
 			catch (int i)
 			{

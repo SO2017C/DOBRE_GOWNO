@@ -1,6 +1,0 @@
-XP wyslij 50
-XD odbierz 50
-SP wyslij odbierz
-SM wyslij komunikat
-RM odbierz 9
-HT

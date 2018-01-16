@@ -1,8 +1,0 @@
-MO A 5
-MO D A
-MO B A
-DC B
-MU A B
-DC D
-JM 21
-HT
