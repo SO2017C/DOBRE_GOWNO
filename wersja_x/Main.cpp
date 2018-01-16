@@ -13,7 +13,8 @@ int main() {
 	
 	PCB *Init = new PCB(1);
 	tree.F_process = NULL;
-	
+	tree.Pname = *Init;
+
 	mm.start();
 	//Init->page_table = mm.createPageTable(16, 1);
 	SHELL shell(interp,mm,pcb,plan,tree,pipeline,disk);
