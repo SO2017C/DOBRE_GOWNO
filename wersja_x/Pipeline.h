@@ -32,7 +32,6 @@ private:
 	PCB  *p1;	//wskaünik na proces wysy≥ajπcy komunikaty
 	PCB  *p2;	//wskaünik na proces odczytujπcy
 	Pipeline *pl;	//wskaünik do klasy nadrzÍdnej
-	Sync sync;
 };
 
 
