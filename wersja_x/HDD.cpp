@@ -1,9 +1,5 @@
 #include "HDD.h"
 
-//GLOBALNE123
-
-
-
 //DICTIONARY
 //DISK SIZE - disk's capacity. Number of bytes on disk. One disk = n*block, n - number of blocks, one block have 32 bytes
 //BLOCK - block of 32 bytes. It is one sector on disk.
@@ -12,7 +8,6 @@
 //DATA CONTAINER - part of disk, where data are keeping
 //BITS VECTOR - first block on disk (part of disk), where info about free blocks are keeping
 //FAT TABLE - separate table, where info about files are keeping (like catalog) In oryginal disk FAT TABLE is integrated with, but this disk is to small to do it
-
 
 //BASIC FUNCTIONS
 bool HDD::check_file_exist(std::string file_to_save_name) {
@@ -61,6 +56,26 @@ void HDD::uniforming_format_of_data_index(int index_index_block, int index_data_
 	}//end of else
 }
 
+bool HDD::check_file_status(std::string file_name) {
+	for (int i = 0; i < directory.size(); i++) {
+		if (directory[i].file_name == file_name) {
+			if (directory[i].flag == 1) {
+				return 1;
+			}
+			else {
+				return 0;
+			}
+		}
+	}
+}
+
+int HDD::check_file_index(std::string file_name) {
+	for (int i = 0; i < directory.size(); i++) {
+		if (directory[i].file_name == file_name) {
+			return i;
+		}
+	}
+}
 //EXTENSIONS
 void HDD::detailed_disk_view() {
 
@@ -156,6 +171,9 @@ HDD::HDD() {
 			HDD_file >> actual_directory.file_name;
 			HDD_file >> actual_directory.file_size;
 			HDD_file >> actual_directory.first_block_index;
+			//NOWE
+			actual_directory.user = "";
+			actual_directory.flag = 1;
 			directory.push_back(actual_directory);
 		}
 		directory.erase(directory.begin() + directory.size() - 1, directory.end());
@@ -170,7 +188,6 @@ HDD::HDD() {
 }
 
 HDD::~HDD() {
-	save_to_file();
 }
 
 void HDD::create_file(std::string file_to_save_name, int file_to_save_size) {
@@ -187,6 +204,7 @@ void HDD::create_file(std::string file_to_save_name, int file_to_save_size) {
 
 			//SAVING FILE TO FAT TABLE
 			FAT_struct file_to_save = { file_to_save_name, file_to_save_size, index_index_block }; // generating data from parameters to save in FAT TABLE
+			file_to_save.flag = 1;
 			directory.push_back(file_to_save); // saving new file to FAT table
 
 											   //SAVING DATA
@@ -356,7 +374,7 @@ void HDD::write_file(std::string file_to_write_name, std::string text_to_write, 
 						}
 						else {
 							if (text_size > 0) {//>= jesli pobiera bez \n
-												//std::cout << "WPISUJE: " << text_to_write[text_to_write.size() - text_size] - 48 << "KONIEC\n";
+												//std::cout<<"WPISUJE: "<< text_to_write[text_to_write.size() - text_size]-48<<"KONIEC\n";
 								data_container[actual_index_to_write*block_size + j] = text_to_write[text_to_write.size() - text_size];
 								text_size--;
 							}
@@ -367,7 +385,7 @@ void HDD::write_file(std::string file_to_write_name, std::string text_to_write, 
 					i = i + 2;
 				}
 
-				std::cout << "File was wrote successfully!\n";
+				std::cout << "File was write successfully!\n";
 			}
 			else {
 				std::cout << "Not enough space to write content to file (from indicator position to end of file)\n";
@@ -424,7 +442,37 @@ void HDD::delete_file(std::string file_to_delete_name) {
 	}//else
 }//delete_file
 
- //EXTENSION
+void HDD::open_file(std::string file_name) {
+	if (check_file_exist(file_name) == true) {
+		if (check_file_status(file_name) == 1) {
+			directory[check_file_index(file_name)].flag = 0;
+			std::cout << "File has been opened successfull!\n";
+		}
+		else {
+			std::cout << "File is already open!\n";
+		}
+	}
+	else {
+		std::cout << "File of these name doesn't exist!\n";
+	}
+}
+
+void HDD::close_file(std::string file_name) {
+	if (check_file_exist(file_name) == true) {
+		if (check_file_status(file_name) == 0) {
+			directory[check_file_index(file_name)].flag = 1;
+			std::cout << "File has been closed successfull!\n";
+		}
+		else {
+			std::cout << "File is already close!\n";
+		}
+	}
+	else {
+		std::cout << "File of these name doesn't exist!\n";
+	}
+}
+
+//EXTENSION
 void HDD::show_all_info() {
 	percentage_disk_view();
 	//percentage_sectors_view();
@@ -433,12 +481,7 @@ void HDD::show_all_info() {
 	directory_view();
 }//show_all_info
 
- //void read_from_file() {
- //
- //}
-
-void HDD::save_to_file() 
-{
+void HDD::save_to_file() {
 	std::ofstream HDD_file;
 	HDD_file.open("HDD_file.txt", std::ios_base::trunc);
 	for (int i = 0; i < 1024; i++) {

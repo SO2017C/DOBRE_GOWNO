@@ -142,7 +142,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 3 && are_there_numbers(command_line[2]))                                                    // stworz plik bez tekstu
 		{
-			DISK.create_file(command_line[1], std::stoi(command_line[2]));
+			dysk.create_file(command_line[1], std::stoi(command_line[2]));
 			permissions.createACL(command_line[1]);//TU IF CZY SIE UDALO STWORZYC!
 												   //uprawnienia.getfacl(command_line[1]);
 		}
@@ -162,9 +162,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 				if (std::stoi(command_line[2]) >= wpisz.size())
 				{
 
-					DISK.create_file(command_line[1], std::stoi(command_line[2]));
+					dysk.create_file(command_line[1], std::stoi(command_line[2]));
 					permissions.createACL(command_line[1]);
-					DISK.write_file(command_line[1], wpisz, 0);
+					dysk.write_file(command_line[1], wpisz, 0);
 				}
 				else
 				{
@@ -194,7 +194,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		else if (command_line.size() == 2)
 		{
 			if (permissions.read_permission(command_line[1]) == true) {
-				std::cout << DISK.read_file(command_line[1]) << std::endl;
+				std::cout << dysk.read_file(command_line[1]) << std::endl;
 			}
 			else
 			{
@@ -234,7 +234,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 					{
 						char liczba = tekst[tekst.size() - 1];
 						std::string wpisz(tekst.begin() + 1, tekst.end() - 3);
-						DISK.write_file(command_line[1], wpisz, liczba - 48);
+						dysk.write_file(command_line[1], wpisz, liczba - 48);
 					}
 				}
 				else // bez wskaznika
@@ -242,7 +242,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 					if (tekst.at(0) == '"'&&tekst.at(tekst.size() - 1) == '"')
 					{
 						std::string wpisz(tekst.begin() + 1, tekst.end() - 1);
-						DISK.write_file(command_line[1], wpisz, 0);
+						dysk.write_file(command_line[1], wpisz, 0);
 					}
 					else
 					{
@@ -270,7 +270,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		else if (command_line.size() == 2)
 		{
 			if (permissions.exec_permission(command_line[1]) == true) {
-				DISK.delete_file(command_line[1]);
+				dysk.delete_file(command_line[1]);
 				permissions.deleteACL(command_line[1]);
 			}
 			else
@@ -293,7 +293,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 3)
 		{
-			DISK.rename_file(command_line[1], command_line[2]);
+			dysk.rename_file(command_line[1], command_line[2]);
 		}
 		else
 		{
@@ -305,7 +305,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	{
 		if (command_line.size() == 1)
 		{
-			DISK.format_disk();
+			dysk.format_disk();
 			permissions.delete_all_ACLs();
 		}
 		else
@@ -318,7 +318,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	{
 		if (command_line.size() == 1)
 		{
-			DISK.show_all_info();
+			dysk.show_all_info();
 		}
 		else
 		{
@@ -684,6 +684,8 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	}
 	case EXIT:
 	{
+		dysk.save_to_file();
+		//dysk.show_all_info();
 		exit();
 		break;
 	}

@@ -3,11 +3,14 @@
 #include "ACL.h"
 
 
-
 struct FAT_struct {//structure for keeping info about file
 	std::string file_name; //name of file
 	int file_size; //size of file (without bits for indexes)
 	int first_block_index; //index of firs data's block
+
+						   //NOWE
+	std::string user;
+	bool flag;
 };//end of FAT_struct
 
 class HDD {
@@ -29,6 +32,10 @@ private:
 	int check_first_empty_block();
 
 	void uniforming_format_of_data_index(int index_index_block, int index_data_block, int counter_tmp);
+
+	bool check_file_status(std::string file_name);
+
+	int check_file_index(std::string file_name);
 
 	//EXTENSIONS
 	void detailed_disk_view();
@@ -58,10 +65,12 @@ public:
 
 	void delete_file(std::string file_to_delete_name);
 
+	void open_file(std::string file_name);
+
+	void close_file(std::string file_name);
+
 	//EXTENSION
 	void show_all_info();
-
-	//void read_from_file();
 
 	void save_to_file();
 

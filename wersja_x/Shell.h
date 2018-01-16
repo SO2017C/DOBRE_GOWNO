@@ -32,7 +32,7 @@ private:
 	HELP_CLASS help_class;
 
 	/*DEKLARACJE INNYCH MODU£ÓW*/
-	HDD DISK;
+	//HDD DISK; //LOL
 	Permissions permissions;
 	/*DEKLARACJE INNYCH MODU£ÓW*/
 

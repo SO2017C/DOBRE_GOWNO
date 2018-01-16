@@ -633,6 +633,7 @@
 			std::string tekst;
 			tekst = "RejA: " + std::to_string(rejA) + " RejB: " + std::to_string(rejB) + "RejC: " + std::to_string(rejC);
 			//tekst = pobierzRozkaz(mm,pcb);
+			std::cout << rej1 << "II\n";
 			dysk.write_file(rej1, tekst, 0);
 			//dysk.save_to_file();
 			zapiszRejestry(pcb);
