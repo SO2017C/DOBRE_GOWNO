@@ -6,7 +6,6 @@
 // 0 - proces ma prawo odczytywaæ
 //sam dysktyprot jest umieszczony w PCB i przechowuje inkeds potoku w tablicy potoków oraz prawid³owy Descriptor
 
-Sync sync;
 
 Pipe::Pipe(PCB & p1, PCB& p2, Pipeline& pl)
 {
