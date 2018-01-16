@@ -475,19 +475,23 @@
 			liczba = stoi(rej1);
 			if (rej2 == "A")
 			{
-
+				rej1 = std::to_string(rejA);
+				mm.Write(&pcb, liczba, rej1 );
 			}
 			else if (rej2 == "B")
 			{
-
+				rej1 = std::to_string(rejB);
+				mm.Write(&pcb, liczba, rej1);
 			}
 			else if (rej2 == "C")
 			{
-
+				rej1 = std::to_string(rejC);
+				mm.Write(&pcb, liczba, rej1);
 			}
 			else if (rej2 == "D")
 			{
-
+				rej1 = std::to_string(rejD);
+				mm.Write(&pcb, liczba, rej1);
 			}
 			
 		}
@@ -536,11 +540,7 @@
 			int id1, id2;
 			rej1 = pobierzRozkaz(mm, pcb);
 			rej2 = pobierzRozkaz(mm, pcb);
-			//id1 = stoi(pobierzRozkaz(mm, pcb));
-			//planista.wykonanie_rozkazu(sizeof(id1));
-			//id2 = stoi(pobierzRozkaz(mm, pcb));
-			//planista.wykonanie_rozkazu(sizeof(id2));
-			//pipeline.createPipe(tree.Get_process_1(rej1), tree.Get_process_1(rej2));        POPRAWIC!!!!!!!!!!
+			pipeline.createPipe(tree.Get_process_1(rej1), tree.Get_process_1(rej2));        
 			StanRej();
 			zapiszRejestry(pcb);
 
@@ -550,7 +550,7 @@
 		{
 			int id;
 			id = stoi(pobierzRozkaz(mm, pcb));
-			//pipeline.deletePipe(tree.Get_process(id));
+			pipeline.deletePipe(tree.Get_process(id));
 			StanRej();
 			zapiszRejestry(pcb);
 		}

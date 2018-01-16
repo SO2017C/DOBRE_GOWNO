@@ -304,6 +304,8 @@ PCB& Tree::Get_process(const int &id) {
 		}
 		throw 1;
 	}
+
+
 PCB &Tree::Get_process_1(const std::string &proces_name) {
 	if (proces_name != Pname.Process_name) {
 		if (Children_list.size() > 0) {
