@@ -663,7 +663,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			catch(int i)
 			{
 				if (i == 0) std::cout << "You cannot look into INIT, it's our's company secret" << std::endl;
-				else if (i == 1) std::cout << "There is not a process with the " << command_line.at(1) << " ID" << std::endl;
+				else if (i == 1) std::cout << "There is not a process with the ID: " << command_line.at(1) << std::endl;
 			}
 		}
 		break;
