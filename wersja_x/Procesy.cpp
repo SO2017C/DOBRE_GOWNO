@@ -128,7 +128,6 @@ void Tree::Display_PCB(MemoryManager &mm, PCB* proces) {
 	std::cout << "Wartosc rejestru A wynosi " << proces->Reg1 << std::endl;
 	std::cout << "Wartosc rejestru B wynosi " << proces->Reg2 << std::endl;
 	std::cout << "Wartosc rejestru C wynosi " << proces->Reg3 << std::endl;
-	std::cout << "Wartosc rejestru D wynosi " << proces->Reg4 << std::endl;
 	std::cout << "Wartosc priorytetu wynosi " << proces->Priority << std::endl;
 	std::cout << "Wartosc priorytetu dynamicznego wynosi " << proces->Dynamic_priority << std::endl;
 	std::cout << "Wartosc licznika rozkazow wynosi " << proces->Command_counter << std::endl;
@@ -291,9 +290,7 @@ PCB& Tree::Get_process(const int &id) {
 	if (id == Pname.PID) return Pname;
 	else if (Children_list.size() > 0) {
 			for (Tree *p1 : Children_list) {
-				if (id == p1->Pname.PID) {
-					return p1->Pname;
-				}	
+				if (id == p1->Pname.PID) return p1->Pname;
 				if (p1->Children_list.size() > 0) {
 					for (Tree *p2 : Children_list) {
 						if (id == p2->Pname.PID) return p2->Pname;
