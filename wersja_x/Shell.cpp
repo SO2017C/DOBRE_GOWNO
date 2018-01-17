@@ -83,7 +83,7 @@ void SHELL::letters_to_upper(std::string &s)
 // 
 //  }
 //}
-void SHELL::command()
+void SHELL::command(HDD &dysk)
 {
 
 	std::string zdanie;
@@ -100,7 +100,7 @@ void SHELL::command()
 	}
 	if (command_line.size() < 1)                                    // jesli ktos podal zdanie zawierajacy tylko: " \ / | % ! - = * +, to wtedy size jest rowny 0, gdyz regex go nie wylapie
 	{
-		std::cout << permissions.return_log_in_user_name().name << "::> ";
+		std::cout << dysk.permissions.return_log_in_user_name().name << "::> ";
 		command_line.clear();
 	}
 	else if (are_there_letters(command_line[0]))                    // jesli w pierwszym wyrazie sa literki
@@ -110,18 +110,18 @@ void SHELL::command()
 	else                                                            // jezeli ktos wpisze np. tylko: ";)" "$$" to wtedy command_line.size() == 0, czyli wywolujemy ze ma podac w 1. parametrze funkcje
 	{
 		error_r();
-		std::cout << permissions.return_log_in_user_name().name << "::> ";
+		std::cout << dysk.permissions.return_log_in_user_name().name << "::> ";
 		command_line.clear();
 	}
 }
 void SHELL::run(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline, HDD &dysk)
 {
 	do {
-		std::cout << permissions.return_log_in_user_name().name << "::> ";                                   // wypisanie naszego "znaku poczatku komendy" - czy jak to nazwac
+		std::cout << dysk.permissions.return_log_in_user_name().name << "::> ";                                   // wypisanie naszego "znaku poczatku komendy" - czy jak to nazwac
 		command_line.clear();                                    // wyczyszczenie command_line z poprzedniej komendy (tej ktora zostala wykonana)
 		while (command_line.size() <= 0)                         // jezeli ktos podal np. "||" jako nazwe funkcji, to petla sie powtarza lub jesli sa jakies nieprawidlowe parametry
 		{
-			command();                                           // wywolanie funkcji pobierajacej komende od uzytkownika
+			command(dysk);                                           // wywolanie funkcji pobierajacej komende od uzytkownika
 		}
 		switch_case(inter, mm, pcb, planista, tree, pipeline, dysk);                                           // w przypadku komendy, ktora wydaje sie w miare "poprawna" wywolujemy switch_case()
 
@@ -143,7 +143,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		else if (command_line.size() == 3 && are_there_numbers(command_line[2]))                                                    // stworz plik bez tekstu
 		{
 			dysk.create_file(command_line[1], std::stoi(command_line[2]));
-			permissions.createACL(command_line[1]);//TU IF CZY SIE UDALO STWORZYC!
+			dysk.permissions.createACL(command_line[1]);//TU IF CZY SIE UDALO STWORZYC!
 												   //uprawnienia.getfacl(command_line[1]);
 		}
 		else if (command_line.size() >= 4 && are_there_numbers(command_line[2]))                                                    // stworz plik z tekstem
@@ -163,7 +163,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 				{
 
 					dysk.create_file(command_line[1], std::stoi(command_line[2]));
-					permissions.createACL(command_line[1]);
+					dysk.permissions.createACL(command_line[1]);
 					dysk.write_file(command_line[1], wpisz, 0);
 				}
 				else
@@ -193,12 +193,12 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 2)
 		{
-			if (permissions.read_permission(command_line[1]) == true) {
+			if (dysk.permissions.read_permission(command_line[1]) == true) {
 				std::cout << dysk.read_file(command_line[1]) << std::endl;
 			}
 			else
 			{
-				std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to read that file" << std::endl;
+				std::cout << "User \"" << dysk.permissions.return_log_in_user_name().name << "\" does not have permissions to read that file" << std::endl;
 			}
 
 		}
@@ -218,7 +218,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		else if (command_line.size() >= 3)                                                                 // stworz plik z tekstem
 		{
 			std::string tekst;
-			if (permissions.write_permission(command_line[1])==true)
+			if (dysk.permissions.write_permission(command_line[1])==true)
 			{
 				for (unsigned int i = 2; i < command_line.size(); i++)
 				{
@@ -252,7 +252,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			}
 			else
 			{
-				std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to change content in that file" << std::endl;
+				std::cout << "User \"" << dysk.permissions.return_log_in_user_name().name << "\" does not have permissions to change content in that file" << std::endl;
 			}
 		}
 		else
@@ -269,13 +269,13 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 2)
 		{
-			if (permissions.exec_permission(command_line[1]) == true) {
+			if (dysk.permissions.exec_permission(command_line[1]) == true) {
 				dysk.delete_file(command_line[1]);
-				permissions.deleteACL(command_line[1]);
+				dysk.permissions.deleteACL(command_line[1]);
 			}
 			else
 			{
-				std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to delete that file" << std::endl;
+				std::cout << "User \"" << dysk.permissions.return_log_in_user_name().name << "\" does not have permissions to delete that file" << std::endl;
 			}
 		}
 		else
@@ -306,7 +306,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		if (command_line.size() == 1)
 		{
 			dysk.format_disk();
-			permissions.delete_all_ACLs();
+			dysk.permissions.delete_all_ACLs();
 		}
 		else
 		{
@@ -337,9 +337,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 3)
 		{
-			if (permissions.user_exists(command_line[1]) == false)
+			if (dysk.permissions.user_exists(command_line[1]) == false)
 			{
-				permissions.add_user(command_line[1], command_line[2]);
+				dysk.permissions.add_user(command_line[1], command_line[2]);
 				std::cout << "The user \"" << command_line[1] << "\" has been successfully created." << std::endl << std::endl;
 			}
 			else
@@ -350,9 +350,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 2)
 		{
-			if (permissions.user_exists(command_line[1]) == false)
+			if (dysk.permissions.user_exists(command_line[1]) == false)
 			{
-				permissions.add_user(command_line[1], "");
+				dysk.permissions.add_user(command_line[1], "");
 				std::cout << "The user \"" << command_line[1] << "\" has been successfully added." << std::endl << std::endl;
 			}
 			else
@@ -374,9 +374,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 2)
 		{
-			if (permissions.user_exists(command_line[1]))
+			if (dysk.permissions.user_exists(command_line[1]))
 			{
-				permissions.delete_user(command_line[1]);
+				dysk.permissions.delete_user(command_line[1]);
 			}
 			else
 			{
@@ -391,7 +391,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	}
 	case DISPLAYUSERS:
 	{
-		permissions.display_users();
+		dysk.permissions.display_users();
 		break;
 	}
 	case GROUPADD:
@@ -402,9 +402,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		if (command_line.size() == 2)
 		{
-			if (permissions.group_exists(command_line[1]) == false)
+			if (dysk.permissions.group_exists(command_line[1]) == false)
 			{
-				permissions.add_group(command_line[1]);
+				dysk.permissions.add_group(command_line[1]);
 				std::cout << "The group \"" << command_line[1] << "\" has been successfully created." << std::endl << std::endl;
 			}
 			else
@@ -427,9 +427,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		if (command_line.size() == 2)
 		{
-			if (permissions.group_exists(command_line[1]))
+			if (dysk.permissions.group_exists(command_line[1]))
 			{
-				permissions.delete_group(command_line[1]);
+				dysk.permissions.delete_group(command_line[1]);
 			}
 			else
 			{
@@ -444,7 +444,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	}
 	case DISPLAYGROUPS:
 	{
-		permissions.display_groups();
+		dysk.permissions.display_groups();
 		break;
 	}
 	case SWITCHUSER:
@@ -455,11 +455,11 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 3)
 		{
-			permissions.log_out_and_in(command_line[1], command_line[2]);
+			dysk.permissions.log_out_and_in(command_line[1], command_line[2]);
 		}
 		else if (command_line.size() == 2)
 		{
-			permissions.log_out_and_in(command_line[1], "");
+			dysk.permissions.log_out_and_in(command_line[1], "");
 		}
 		else
 		{
@@ -475,7 +475,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 3)
 		{
-			permissions.add_to_group(command_line[1], command_line[2]);
+			dysk.permissions.add_to_group(command_line[1], command_line[2]);
 		}
 		else
 		{
@@ -492,7 +492,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 2)
 		{
-			permissions.getfacl(command_line[1]);
+			dysk.permissions.getfacl(command_line[1]);
 		}
 		else
 		{
@@ -529,7 +529,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 				{
 					char right = command_line[2].at(command_line[2].size() - 1);
 					command_line[2].resize(command_line[2].size() - 2);
-					permissions.setfacl(command_line[1].at(1), command_line[2], right, command_line[3]);
+					dysk.permissions.setfacl(command_line[1].at(1), command_line[2], right, command_line[3]);
 
 				}
 				else
@@ -562,7 +562,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 				{
 					char right = command_line[2].at(command_line[2].size() - 1);
 					command_line[2].resize(command_line[2].size() - 2);
-					permissions.setfacl(command_line[1].at(1), command_line[2], right, command_line[3]);
+					dysk.permissions.setfacl(command_line[1].at(1), command_line[2], right, command_line[3]);
 				}
 				else
 				{
@@ -586,7 +586,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	{
 		if (command_line.size() == 1)
 		{
-			permissions.display_all_ACLs();
+			dysk.permissions.display_all_ACLs();
 		}
 		else
 		{
@@ -663,7 +663,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			catch(int i)
 			{
 				if (i == 0) std::cout << "You cannot look into INIT, it's our's company secret" << std::endl;
-				else if (i == 1) std::cout << "There is not a process with the ID: " << command_line.at(1) << std::endl;
+				else if (i == 1) std::cout << "There is not a process with the " << command_line.at(1) << " ID" << std::endl;
 			}
 		}
 		break;

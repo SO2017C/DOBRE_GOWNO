@@ -10,6 +10,7 @@ void PCB::Change_process_state(Process_state x) {
 //stworzenie procesu
 void Tree::Fork(PCB * process, const std::string &name, MemoryManager &mm, const int &mem) {
 	//dodanie dziecka init'a
+	std::cout << "TU JESTEM KURWA!\n";
 	if (process->PID == Pname.PID) {
 		Tree *temp = new Tree();
 		temp->F_process = process;
@@ -44,14 +45,12 @@ void Tree::Fork(PCB * process, const std::string &name, MemoryManager &mm, const
 }
 //fork z nazwa pliku otwartego
 void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file_name, MemoryManager &mm, const int &mem) {
-	bool check = false;
 	//dodanie dziecka init'a
 	if (process->PID == Pname.PID) {
 		Tree *temp = new Tree();
 		temp->F_process = process;
 		Up_data(temp->Pname, name, file_name, mm, mem);
 		Children_list.push_back(temp);
-		check = true;
 	}
 	//dodanie potomka dla dziecka init'a
 	else {
@@ -61,7 +60,6 @@ void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file
 				temp->F_process = process;
 				Up_data(temp->Pname, name, file_name, mm, mem);
 				p1->Children_list.push_back(temp);
-				check = true;
 				break;
 			}
 			else if (p1->Children_list.size() != 0) {
@@ -71,7 +69,6 @@ void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file
 						temp->F_process = process;
 						Up_data(temp->Pname, name, file_name, mm, mem);
 						p2->Children_list.push_back(temp);
-						check = true;
 						//wyjscie z pierwszej petli (poziom drugi) -> init jest pierwszym
 						p1 = *(Children_list.end() - 1);
 						break;
@@ -80,15 +77,6 @@ void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file
 			}
 		}
 	}
-	//jak chce stworzyc poziom wyzszy niz 3 to dodaje dziecko do inita
-	if (check == false) {
-		std::cout << "Nie znalazlem procesu o takim ID, tworze proces potomny dla Init'a" << std::endl;
-		Tree *temp = new Tree();
-		temp->F_process = process;
-		Up_data(temp->Pname, name, file_name, mm, mem);
-		Children_list.push_back(temp);
-		check = true;
-	}
 }
 //nadanie wartosci pol w PCB
 void Tree::Up_data(PCB &process, const std::string &name, const std::string &file_name, MemoryManager &mm, const int &mem) {
@@ -96,10 +84,13 @@ void Tree::Up_data(PCB &process, const std::string &name, const std::string &fil
 	process.PID = Free_pid;
 	process.Process_size = mem;
 	process.File_name = file_name;
+	//std::cout << process.PID << std::endl;
+	//ogarnac throwa przy usuwaniu procesu
 	if (mm.LoadProgram(file_name, mem, process.PID) == -1) {
 		Exit_1(Free_pid, mm);
 		throw 1;
 	}
+	//mm.LoadProgram(file_name, mem, process.PID);
 	process.page_table = mm.createPageTable(mem, process.PID);
 	process.Change_process_state(Ready);
 	Free_pid++;
@@ -300,12 +291,14 @@ PCB& Tree::Get_process(const int &id) {
 	if (id == Pname.PID) return Pname;
 	else if (Children_list.size() > 0) {
 			for (Tree *p1 : Children_list) {
-				if (id == p1->Pname.PID) return p1->Pname;
+				if (id == p1->Pname.PID) {
+					return p1->Pname;
+				}	
 				if (p1->Children_list.size() > 0) {
-					for (Tree *p2 : p1->Children_list) {
+					for (Tree *p2 : Children_list) {
 						if (id == p2->Pname.PID) return p2->Pname;
 						if (p2->Children_list.size()>0) {
-							for (Tree *p3 : p2->Children_list) {
+							for (Tree *p3 : Children_list) {
 								if (id == p3->Pname.PID) return p3->Pname;
 							}
 						}
@@ -317,23 +310,24 @@ PCB& Tree::Get_process(const int &id) {
 	}
 
 PCB &Tree::Get_process_1(const std::string &proces_name) {
-	if (proces_name == Pname.Process_name) return Pname;
-	else if (Children_list.size() > 0) {
-		for (Tree *p1 : Children_list) {
-			if (proces_name == p1->Pname.Process_name) return p1->Pname;
-			if (p1->Children_list.size() > 0) {
-				for (Tree *p2 : p1->Children_list) {
-					if (proces_name == p2->Pname.Process_name) return p2->Pname;
-					if (p2->Children_list.size()>0) {
-						for (Tree *p3 : p2->Children_list) {
-							if (proces_name == p3->Pname.Process_name) return p3->Pname;
+	if (proces_name != Pname.Process_name) {
+		if (Children_list.size() > 0) {
+			for (Tree *p1 : Children_list) {
+				if (proces_name == p1->Pname.Process_name) return p1->Pname;
+				if (p1->Children_list.size() > 0) {
+					for (Tree *p2 : Children_list) {
+						if (proces_name == p2->Pname.Process_name) return p2->Pname;
+						if (p2->Children_list.size()>0) {
+							for (Tree *p3 : Children_list) {
+								if (proces_name == p3->Pname.Process_name) return p3->Pname;
+							}
 						}
 					}
 				}
 			}
 		}
+		throw 1;
 	}
-	throw 1;
 }
 
 
