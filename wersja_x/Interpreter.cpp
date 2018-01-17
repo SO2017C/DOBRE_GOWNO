@@ -563,11 +563,9 @@
 		{
 			int id;
 
-			//id = stoi(pobierzRozkaz(mm, pcb));
-			//planista.wykonanie_rozkazu(sizeof(id));
+			
 			rej1 = pobierzRozkaz(mm, pcb);
 			rej2 = pobierzRozkaz(mm, pcb);
-			//planista.wykonanie_rozkazu(rej1.size());
 			PCB p1;
 			p1 = tree.Get_process_1(rej1);
 			if (p1.Descriptor[0] >= 0)
@@ -588,16 +586,25 @@
 		{
 			int dlugosc;
 			rej2 = pobierzRozkaz(mm, pcb);
+			std::string adres;
+			adres = pobierzRozkaz(mm, pcb);
+			int adr;
+			adr = stoi(adres);
 			dlugosc = stoi(pobierzRozkaz(mm, pcb));
-			//planista.wykonanie_rozkazu(sizeof(id));
-			
-			//planista.wykonanie_rozkazu(rej1.size());
 			PCB p1;
 			p1 = tree.Get_process_1(rej2);
 			if (p1.Descriptor[0] >= 0)
 			{
 				rej1 = pipeline.pipes[p1.Descriptor[0]]->read(dlugosc);
-				std::cout << "Odczytana wiadomosc: " << rej1;
+				if (mm.Write(&p1, adr, rej1)==-1)
+				{
+					planista.make_zombie(p1,tree,mm);
+					std::cout << "Pamiec pelna!" << std::endl;
+				}
+				else {
+						std::cout << "Odczytana wiadomosc: " << rej1;
+				}
+				
 			}
 			else
 			{
