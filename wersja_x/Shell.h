@@ -33,7 +33,7 @@ private:
 
 	/*DEKLARACJE INNYCH MODU£ÓW*/
 	//HDD DISK; //LOL
-	Permissions permissions;
+	
 	/*DEKLARACJE INNYCH MODU£ÓW*/
 
 
@@ -46,7 +46,7 @@ private:
 
 
 																/* POBIERANIE DANYCH ORAZ PRZESYLANIE DALEJ */
-	void command();												// funkcja wpisania komendy przez uzytkownika, sprawdzenie jej poprawnosci oraz sformatowanie jej.
+	void command(HDD &dysk);												// funkcja wpisania komendy przez uzytkownika, sprawdzenie jej poprawnosci oraz sformatowanie jej.
 	void run(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline,HDD &dysk);													// nowa glowna funkcja
 
 	/* METODY POMOCNICZE */
