@@ -115,12 +115,11 @@ void HELP_CLASS::DISPLAYMEMORY_H()
 /// PROCESS
 void HELP_CLASS::CREATEPROCESS_H()
 {
-	std::cout << "Usage: cp [param1] [param2] [param3] [param4]" << std::endl << std::endl;
+	std::cout << "Usage: cp [param1] [param2] [param3]" << std::endl << std::endl;
 	std::cout << "Options: " << std::endl;
 	std::cout << "\tparam1 - ID of the father process." << std::endl;
 	std::cout << "\tparam2 - amount of bytes dedicated for that process in memory." << std::endl;
-	std::cout << "\tparam3 - name for the new process." << std::endl;
-	std::cout << "\tparam4 - name of the .txt file with the program." << std::endl << std::endl;
+	std::cout << "\tparam3 - name of the .txt file with the program." << std::endl << std::endl;
 }
 
 void HELP_CLASS::SHOWPCB_H()
