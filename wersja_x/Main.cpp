@@ -18,6 +18,6 @@ int main() {
 	tree.Pname = *Init;
 
 	mm.start();
-	//Init->page_table = mm.createPageTable(16, 1);
+	tree.Pname.page_table = mm.createPageTable(32, 1);
 	SHELL shell(interp,mm,pcb,plan,tree,pipeline,disk);
 }

@@ -688,7 +688,7 @@
 		if (operacja == "HT") //koniec pliku, zapis rej do procesu
 		{
 			zapiszRejestry(pcb);
-			planista.make_zombie(pcb);
+			planista.make_zombie(pcb,tree,mm);
 			//pcb.Change_process_state(Zombie);
 
 		}

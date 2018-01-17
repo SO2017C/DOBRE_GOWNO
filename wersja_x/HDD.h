@@ -19,6 +19,7 @@ private:
 	unsigned int const disc_size = 1024;
 	unsigned int const block_size = 32;
 	unsigned int block_number = disc_size / block_size;
+	Permissions permissions;//Zmiana
 
 	//DATA FIELDS
 	std::array<char, 1024> data_container;

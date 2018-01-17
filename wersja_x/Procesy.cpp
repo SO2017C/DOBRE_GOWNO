@@ -122,6 +122,7 @@ void Tree::Display_tree() {
 //wyswietlenie skladowych procesu
 void Tree::Display_PCB(MemoryManager &mm, PCB* proces) {
 	std::cout << "Proces o nazwie " << proces->Process_name << " ma id rowne " << proces->PID << std::endl;
+	std::cout << "STATUS: " << proces->State << std::endl;
 	std::cout << "Zajmowana przez niego pamiec: " << proces->Process_size << std::endl;
 	mm.showPageTable(proces->page_table);
 	std::cout << "Wartosc rejestru A wynosi " << proces->Reg1 << std::endl;
@@ -304,7 +305,6 @@ PCB& Tree::Get_process(const int &id) {
 		}
 		throw 1;
 	}
-
 
 PCB &Tree::Get_process_1(const std::string &proces_name) {
 	if (proces_name != Pname.Process_name) {

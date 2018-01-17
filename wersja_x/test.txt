@@ -1,0 +1,3 @@
+MO A 5
+MO D A
+HT

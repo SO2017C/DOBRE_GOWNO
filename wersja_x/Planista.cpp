@@ -1,6 +1,5 @@
 #include "Planista.h"
 PCB running;
-
 Planista::Planista()
 {
 	for (int i = 0; i < 8; i++)
@@ -36,7 +35,7 @@ void Planista::dzielnik_cpu() {
 			}
 			else
 			{
-				it->CPU = it->CPU / 2; std::cout << "Podzielono! \n";
+				it->CPU = it->CPU / 2;
 			}
 			
 
@@ -64,7 +63,8 @@ void Planista::run(Tree &t) {
 	while (kolejka_bool.at(i) == false)				//sprawdzanie pierwszej dostêpnej kolejki w mapie
 	{												//sprawdzanie pierwszej dostêpnej kolejki w mapie
 		if (kolejka_bool.at(i) == true)				//sprawdzanie pierwszej dostêpnej kolejki w mapie
-		{											//sprawdzanie pierwszej dostêpnej kolejki w mapie
+		{
+													//sprawdzanie pierwszej dostêpnej kolejki w mapie
 			break;									//sprawdzanie pierwszej dostêpnej kolejki w mapie
 		}											//sprawdzanie pierwszej dostêpnej kolejki w mapie
 		i++;
@@ -89,17 +89,31 @@ void Planista::run(Tree &t) {
 
 
 
-void Planista::make_zombie(PCB &actual) {
+void Planista::make_zombie(PCB &actual, Tree &t, MemoryManager &mm) {
 	
 	actual.Change_process_state(Zombie);
 	actual.Change_process_state(Terminated);
 	running = actual;
+	int nr = running.Priority / 4;
+	if (mapa_kolejek[nr].empty())
+	{
+		kolejka_bool[nr] = false;
+	}
+	t.Exit_1(running.PID, mm);
 }
 
 void Planista::check(PCB &actual, Tree &t) {
-	
-	actual.Change_process_state(Ready);
-	running = actual;
+	if (actual.State !=Terminated)
+	{
+		actual.Change_process_state(Ready);
+		running = actual;
+	}
+	if (actual.State == Terminated)
+	{
+		running.PID = NULL;
+	}
+
+
 	if (running.PID == NULL)
 	{
 		std::cout << "Start Planisty\n";
@@ -109,7 +123,7 @@ void Planista::check(PCB &actual, Tree &t) {
 	}
 	if (running.PID != NULL)
 	{
-		std::cout << "odk³adanie procesu\n";
+		std::cout << "odkladanie procesu\n";
 		powrot_do_kolejki(running);
 		dzielnik_cpu();
 		run(t);
