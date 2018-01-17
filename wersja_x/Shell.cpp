@@ -1,5 +1,5 @@
 ﻿#include "Shell.h"
-
+extern PCB *troll;
 
 
 
@@ -631,6 +631,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			try
 			{
 				tree.Fork_1(&tree.Get_process(std::stoi(command_line[1])),command_line[3], command_line[4], mm, std::stoi(command_line[2]));
+				std::cout << &tree.Get_process(2).PID<< " !!! " << tree.Get_process(2).PID <<std::endl;
 			}
 			catch (int i)
 			{
@@ -659,6 +660,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			try
 			{
 				tree.Display_PCB(mm, &tree.Get_process(std::stoi(command_line[1])));
+				std::cout << &tree.Get_process(std::stoi(command_line[1])).PID << " !!! " << tree.Get_process(std::stoi(command_line[1])).PID  <<std::endl;
 			}
 			catch(int i)
 			{
@@ -673,7 +675,9 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	/// INTERPRETER
 	case GO:
 	{
-		inter.WykonajProgram(mm, pcb, planista, tree, pipeline, dysk);
+		planista.check(troll, tree); //ustawianie procesu running
+		std::cout << &pcb.PID << " [Shell]\n";
+		inter.WykonajProgram(mm, *troll, planista, tree, pipeline, dysk);
 		break;
 	}
 	/// MY

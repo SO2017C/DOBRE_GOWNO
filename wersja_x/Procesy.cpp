@@ -316,6 +316,8 @@ PCB& Tree::Get_process(const int &id) {
 	throw 1;
 }
 
+
+
 PCB &Tree::Get_process_1(const std::string &proces_name) {
 	if (proces_name == Pname.Process_name) return Pname;
 	else if (Children_list.size() > 0) {
@@ -338,18 +340,18 @@ PCB &Tree::Get_process_1(const std::string &proces_name) {
 
 
 //lista gotowych procesow
-std::vector<PCB> Tree::Ready_processes() {
-	std::vector<PCB> vec;
-	if (Ready == Pname.State) vec.push_back(Pname);
+std::vector<int> Tree::Ready_processes() {
+	std::vector<int> vec;
+	if (Ready == Pname.State) vec.push_back(Pname.PID);
 	if (Children_list.size()>0) {
 		for (Tree *p1 : Children_list) {
-			if (Ready == p1->Pname.State)	vec.push_back(p1->Pname);
+			if (Ready == p1->Pname.State)	vec.push_back(p1->Pname.PID);
 			if (p1->Children_list.size() > 0) {
 				for (Tree * p2 : p1->Children_list) {
-					if (Ready == p2->Pname.State) vec.push_back(p2->Pname);
+					if (Ready == p2->Pname.State) vec.push_back(p2->Pname.PID);
 					if (p2->Children_list.size() > 0) {
 						for (Tree * p3 : p2->Children_list) {
-							if (Ready == p3->Pname.State) vec.push_back(p3->Pname);
+							if (Ready == p3->Pname.State) vec.push_back(p3->Pname.PID);
 						}
 					}
 				}

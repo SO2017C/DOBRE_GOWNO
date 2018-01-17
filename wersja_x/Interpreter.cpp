@@ -8,8 +8,10 @@
 
 	void interpreter::PobierzRejestry(Planista &planista, PCB &pcb, Tree &tree)  //pobieranie rejestrów z procesu który jest w stanie running
 	{
-
-		planista.check(pcb, tree); //ustawianie procesu running
+		std::cout << &pcb.PID << " [Inter 3]\n";
+		
+		std::cout << &pcb.PID << " [Inter 4]\n";
+		std::cout << &pcb.PID << std::endl;
 		PID = pcb.PID;
 		rejA = pcb.Reg1;
 		rejB = pcb.Reg2;
@@ -33,7 +35,7 @@
 
 	void interpreter::zapiszRejestry(PCB &pcb)
 	{
-
+		std::cout << &pcb.PID << " [Inter ZR]\n";
 		pcb.PID = PID;
 		pcb.Reg1 = rejA;
 		pcb.Reg2 = rejB;
@@ -46,7 +48,7 @@
 
 	std::string interpreter::pobierzRozkaz(MemoryManager &mm, PCB &pcb)
 	{
-
+		std::cout << &pcb.PID << " [Inter pr]\n";
 		std::string rozkaz;
 		rozkaz = mm.Get( &pcb , liczRoz);
 		liczRoz += rozkaz.size() + 1;
@@ -56,9 +58,11 @@
 
 	void interpreter::WykonajProgram(MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline, HDD &dysk)
 	{
+		
 		/////////////////////////////////////
-
+		std::cout << &pcb.PID << " [Inter 1]\n";
 		PobierzRejestry(planista, pcb, tree);
+		std::cout << &pcb.PID << " [Inter 2]\n";
 		std::string operacja;
 		operacja.clear();
 		operacja = pobierzRozkaz(mm, pcb);

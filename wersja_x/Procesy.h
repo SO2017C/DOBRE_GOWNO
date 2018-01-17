@@ -73,5 +73,5 @@ public:
 	void Exit_1(const int &id, MemoryManager &mm);
 	PCB &Get_process(const int &id);
 	PCB &Get_process_1(const std::string &proces_name);
-	std::vector<PCB>Ready_processes();
+	std::vector<int>Ready_processes();
 };
