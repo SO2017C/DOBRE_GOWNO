@@ -672,8 +672,7 @@
 			liczba = stoi(pobierzRozkaz(mm, pcb)); //rozmiar
 
 			try {
-				//tree.Fork_1(&(tree.Get_process(1)), rej1, "program10.txt", mm, liczba);
-				tree.Fork_1(&(tree.Pname), rej1, "program10.txt", mm, liczba);
+				tree.Fork_1(&(tree.Get_process(1)), rej1, "program10.txt", mm, liczba);
 			}
 			catch (int e) {
 				if (e == 1) {
