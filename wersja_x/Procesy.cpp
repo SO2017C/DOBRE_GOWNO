@@ -336,7 +336,6 @@ PCB &Tree::Get_process_1(const std::string &proces_name) {
 	throw 1;
 }
 
-
 //lista gotowych procesow
 std::vector<PCB> Tree::Ready_processes() {
 	std::vector<PCB> vec;
