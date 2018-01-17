@@ -587,9 +587,6 @@
 			int adr;
 			adr = stoi(adres);
 			dlugosc = stoi(pobierzRozkaz(mm, pcb));
-			//planista.wykonanie_rozkazu(sizeof(id));
-			
-			//planista.wykonanie_rozkazu(rej1.size());
 			PCB p1;
 			p1 = tree.Get_process_1(rej2);
 			if (p1.Descriptor[0] >= 0)

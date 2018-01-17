@@ -2,5 +2,5 @@ XP wyslij 100
 XP odbierz 100
 SP wyslij odbierz
 SM wyslij komunikat
-RM odbierz 9 0
+RM odbierz 0 9
 HT

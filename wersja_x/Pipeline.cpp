@@ -81,6 +81,7 @@ void Pipe::write(const std::string& msg)
 		{
 			buffer.push(x);
 		}
+		p2->Change_process_state(Ready);
 	}
 	sync.unlock();
 	std::cout << msg << std::endl;
