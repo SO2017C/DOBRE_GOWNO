@@ -256,12 +256,12 @@ void HDD::create_file(std::string file_to_save_name, int file_to_save_size) {
 
 void HDD::rename_file(std::string file_old_name, std::string file_new_name) {
 	if (check_file_exist(file_old_name)) {//checking existing of file
-		if (permissions.read_permission(file_old_name) == true) {
+		if (permissions.write_permission(file_old_name) == true) {
 			if (check_file_status(file_old_name)==1) {
 				for (int i = 0; i < directory.size(); i++) {//searching index of file in FAT
 					if (directory[i].file_name == file_old_name) {//looging for file's old name
 						directory[i].file_name = file_new_name;//changing name
-						permissions.renameACL(file_old_name, file_new_name);
+						permissions.rename_ACL(file_old_name, file_new_name);
 						std::cout << "File's name has been changed successfully!\n";//displaying info
 						break;//breaking loop and ending operation
 					}
@@ -374,7 +374,7 @@ void HDD::write_file(std::string file_to_write_name, std::string text_to_write, 
 	std::string file_content = "";
 
 	if (check_file_exist(file_to_write_name) == true) {
-		if (permissions.read_permission(file_to_write_name) == true) {
+		if (permissions.write_permission(file_to_write_name) == true) {
 			if(check_file_status(file_to_write_name)==0){
 				if (directory[check_file_index(file_to_write_name)].user == permissions.return_log_in_user_name().name) {
 				for (int i = 0; i < directory.size(); i++) {
@@ -451,7 +451,7 @@ void HDD::delete_file(std::string file_to_delete_name) {
 	int residual_size;
 
 	if (check_file_exist(file_to_delete_name) == true) {
-		if (permissions.read_permission(file_to_delete_name) == true) {
+		if (permissions.exec_permission(file_to_delete_name) == true) {
 			if (check_file_status(file_to_delete_name)==1) {
 				for (int i = 0; i < directory.size(); i++) {
 					if (directory[i].file_name == file_to_delete_name) {
