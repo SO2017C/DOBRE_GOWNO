@@ -66,7 +66,7 @@ void Planista::run(Tree &t) {
 			}
 		}
 		if (go == true) {
-			std::cout << &t.Get_process(r[j]).PID << std::endl;
+			//std::cout << &t.Get_process(r[j]).PID << std::endl;
 			dodaj_do_kolejki((t).Get_process(r[j]));
 			r_in_q.push_back(r[j]);
 		}

@@ -106,41 +106,59 @@ void Tree::Up_data(PCB &process, const std::string &name, const std::string &fil
 }
 //wyswietlenie drzewa
 void Tree::Display_tree() {
+	//std::cout << "Wyswietlenie wszystkich procesow\n" << std::endl;
+	//std::cout << "Proces o nazwie "<<Pname.Process_name<<" o ID: " << Pname.PID << std::endl;
+	//if (Children_list.size() != 0) {
+	//	std::cout << "Jego procesy potomne" << std::endl;
+	//	for (int i = 0; i < Children_list.size(); i++) {
+	//		std::cout << "->Proces " << Children_list[i]->Pname.Process_name << " o numerze ID: " << Children_list[i]->Pname.PID << std::endl;
+	//		if (Children_list[i]->Children_list.size() != 0) {
+	//			for (int j = 0; j < Children_list[i]->Children_list.size(); j++) {
+	//				std::cout << "-->Proces " << Children_list[i]->Children_list[j]->Pname.Process_name << " o numerze ID: "
+	//					<< Children_list[i]->Children_list[j]->Pname.PID << std::endl;
+	//				if (Children_list[i]->Children_list[j]->Children_list.size() != 0) {
+	//					for (int k = 0; k < Children_list[i]->Children_list[j]->Children_list.size(); k++) {
+	//						std::cout << "--->Proces " << Children_list[i]->Children_list[j]->Children_list[k]->Pname.Process_name << " o numerze ID: "
+	//							<< Children_list[i]->Children_list[j]->Children_list[k]->Pname.PID << std::endl;
+	//					}
+	//				}
+	//			}
+	//		}
+
+	//	}
+	//}
+	//zmiany
 	std::cout << "Wyswietlenie wszystkich procesow\n" << std::endl;
 	std::cout << "Proces o nazwie "<<Pname.Process_name<<" o ID: " << Pname.PID << std::endl;
 	if (Children_list.size() != 0) {
-		std::cout << "Jego procesy potomne" << std::endl;
-		for (int i = 0; i < Children_list.size(); i++) {
-			std::cout << "->Proces " << Children_list[i]->Pname.Process_name << " o numerze ID: " << Children_list[i]->Pname.PID << std::endl;
-			if (Children_list[i]->Children_list.size() != 0) {
-				for (int j = 0; j < Children_list[i]->Children_list.size(); j++) {
-					std::cout << "-->Proces " << Children_list[i]->Children_list[j]->Pname.Process_name << " o numerze ID: "
-						<< Children_list[i]->Children_list[j]->Pname.PID << std::endl;
-					if (Children_list[i]->Children_list[j]->Children_list.size() != 0) {
-						for (int k = 0; k < Children_list[i]->Children_list[j]->Children_list.size(); k++) {
-							std::cout << "--->Proces " << Children_list[i]->Children_list[j]->Children_list[k]->Pname.Process_name << " o numerze ID: "
-								<< Children_list[i]->Children_list[j]->Children_list[k]->Pname.PID << std::endl;
-						}
-					}
-				}
-			}
-
+		for (auto *p1 : Children_list) {
+			std::cout << "Nazwa procesu:\t" << p1->Pname.Process_name << "\t ID:\t" << p1->Pname.PID << "\tStatus:\t" << p1->Pname.State << std::endl;
 		}
 	}
+
+
+
 }
+
+
+
+
+
+
 //wyswietlenie skladowych procesu
 void Tree::Display_PCB(MemoryManager &mm, PCB* proces) {
-	std::cout << "Proces o nazwie " << proces->Process_name << " ma id rowne " << proces->PID << std::endl;
-	std::cout << "STATUS: " << proces->State << std::endl;
-	std::cout << "Zajmowana przez niego pamiec: " << proces->Process_size << std::endl;
-	mm.showPageTable(proces->page_table);
-	std::cout << "Wartosc rejestru A wynosi " << proces->Reg1 << std::endl;
-	std::cout << "Wartosc rejestru B wynosi " << proces->Reg2 << std::endl;
-	std::cout << "Wartosc rejestru C wynosi " << proces->Reg3 << std::endl;
-	std::cout << "Wartosc rejestru D wynosi " << proces->Reg4 << std::endl;
-	std::cout << "Wartosc priorytetu wynosi " << proces->Priority << std::endl;
-	std::cout << "Wartosc priorytetu dynamicznego wynosi " << proces->Dynamic_priority << std::endl;
-	std::cout << "Wartosc licznika rozkazow wynosi " << proces->Command_counter << std::endl;
+	std::cout << "Proces o nazwie " << proces->Process_name << " ma ID rowne " << proces->PID << std::endl;
+	std::cout << "STATUS:\t" << proces->State << std::endl;
+	std::cout << "Zajmowana pamiec:\t" << proces->Process_size << std::endl;
+	//mm.showPageTable(proces->page_table);
+	std::cout << "Rejestr A:\t" << proces->Reg1 << std::endl;
+	std::cout << "Rejestr B:\t" << proces->Reg2 << std::endl;
+	std::cout << "Rejestr C:\t" << proces->Reg3 << std::endl;
+	std::cout << "Rejestr D:\t" << proces->Reg4 << std::endl;
+	std::cout << "Priorytet:\t" << proces->Priority << std::endl;
+	std::cout << "Priorytet dynamiczny:\t" << proces->Dynamic_priority << std::endl;
+	std::cout << "Licznik rozkazow:\t" << proces->Command_counter << std::endl;
+	std::cout << std::endl;
 }
 //usuniecie wybranego procesu
 void Tree::Exit(const int &id, MemoryManager &mm, Pipeline &pip) {
