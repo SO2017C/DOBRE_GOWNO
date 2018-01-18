@@ -54,8 +54,9 @@ void MemoryManager::showPMemory() {
 
 void MemoryManager::showPageTable(std::vector<PageTableData> *page_table) {
 	//print running->PID
+	std::cout << "FRAME \t | \tBIT" << std::endl;
 	for (int i = 0; i < page_table->size(); i++)
-		std::cout << page_table->at(i).frame << " " << page_table->at(i).bit << std::endl;
+		std::cout << page_table->at(i).frame << "\t | \t" << page_table->at(i).bit << std::endl;
 }
 
 void MemoryManager::ShowPageFile() {
@@ -133,7 +134,7 @@ int MemoryManager::LoadProgram(std::string path, int mem, int PID) {
 	file.open(path, std::ios::in);
 
 	if (!file.is_open()) {
-		//std::cout << "Nie moge otworzyc pliku" << std::endl;
+		std::cout << "Nie moge otworzyc pliku" << std::endl;
 		return -1;
 	}
 
@@ -163,7 +164,7 @@ int MemoryManager::LoadProgram(std::string path, int mem, int PID) {
 
 	//Jezeli przydzielono za malo pamieci wywalam blad
 	if (pages * 16 < 16 * pagevec.size()) {
-		std::cout << "Przydzielono za malo pamieci programowi";
+		std::cout << "Przydzielono za malo pamieci programowi" << std::endl;
 		return -1;
 	}
 
@@ -174,7 +175,7 @@ int MemoryManager::LoadProgram(std::string path, int mem, int PID) {
 	//Dodanie stronic do pliku wymiany
 	PageFile.insert(std::make_pair(PID, pagevec));
 
-	return 1;
+	return 16*pages;
 }
 
 int MemoryManager::SwapPages(std::vector<PageTableData> *page_table, int pageN, int PID) {
@@ -266,6 +267,11 @@ void MemoryManager::Remove(int PID) {
 int MemoryManager::Write(PCB *process, int adress, std::string data) {
 	int stronica = adress / 16;
 	std::string str;
+
+	if (data.size() == 0)
+	{
+		return 1;
+	}
 
 	if (adress + data.size() - 1 > process->page_table->size() * 16 - 1 || adress < 0) {
 		std::cout << "Przekroczona zakres dla tego procesu" << std::endl;

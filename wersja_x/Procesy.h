@@ -46,6 +46,7 @@ public:
 	//konstruktor do init'a
 	PCB::PCB(int a) {
 		this->PID = a;
+		this->Process_size = 16;
 		this->State = Ready;
 		this->Priority = 31;
 		this->Descriptor[0] = -1;
@@ -55,7 +56,7 @@ public:
 
 	//zmiana statusu procesu
 	void Change_process_state(Process_state x);
-
+	std::string Display_state(Process_state x);
 };
 
 class Tree {
@@ -67,10 +68,15 @@ public:
 	void Fork(PCB * process, const std::string &name, MemoryManager &mm, const int &mem);
 	void Fork_1(PCB *process, const std::string &name, const std::string &file_name, MemoryManager &mm, const int &mem);
 	void Up_data(PCB &process, const std::string &name, const std::string &file_name, MemoryManager &mm, const int &mem);
+
 	void Display_tree();
+	void Display_processes();
 	void Display_PCB(MemoryManager &mm, PCB* proces);
+	std::string Display_state(Process_state x);
+
 	void Exit(const int &id, MemoryManager &mm, Pipeline &pip);
 	void Exit_1(const int &id, MemoryManager &mm);
+
 	PCB &Get_process(const int &id);
 	PCB &Get_process_1(const std::string &proces_name);
 	std::vector<int>Ready_processes();

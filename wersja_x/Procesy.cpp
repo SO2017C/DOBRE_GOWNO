@@ -3,10 +3,55 @@
 
 unsigned int Free_pid = 2;
 
+
+
 //zmiana stanu procesu
 void PCB::Change_process_state(Process_state x) {
 	State = x;
 }
+
+std::string PCB::Display_state(Process_state x) {
+	if (x == 0) {
+		return "New";
+	}
+	else if (x == 1) {
+		return "Ready";
+	}
+	else if (x == 2) {
+		return "Running";
+	}
+	else if (x == 3) {
+		return "Waiting";
+	}
+	else if (x == 4) {
+		return "Terminated";
+	}
+	else if (x == 5) {
+		return "Zombie";
+	}
+}
+
+std::string Tree::Display_state(Process_state x) {
+	if (x == 0) {
+		return "New";
+	}
+	else if (x == 1) {
+		return "Ready";
+	}
+	else if (x == 2) {
+		return "Running";
+	}
+	else if (x == 3) {
+		return "Waiting";
+	}
+	else if (x == 4) {
+		return "Terminated";
+	}
+	else if (x == 5) {
+		return "Zombie";
+	}
+}
+
 //stworzenie procesu
 void Tree::Fork(PCB * process, const std::string &name, MemoryManager &mm, const int &mem) {
 	//dodanie dziecka init'a
@@ -44,14 +89,12 @@ void Tree::Fork(PCB * process, const std::string &name, MemoryManager &mm, const
 }
 //fork z nazwa pliku otwartego
 void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file_name, MemoryManager &mm, const int &mem) {
-	bool check = false;
 	//dodanie dziecka init'a
 	if (process->PID == Pname.PID) {
 		Tree *temp = new Tree();
 		temp->F_process = process;
 		Up_data(temp->Pname, name, file_name, mm, mem);
 		Children_list.push_back(temp);
-		check = true;
 	}
 	//dodanie potomka dla dziecka init'a
 	else {
@@ -61,7 +104,6 @@ void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file
 				temp->F_process = process;
 				Up_data(temp->Pname, name, file_name, mm, mem);
 				p1->Children_list.push_back(temp);
-				check = true;
 				break;
 			}
 			else if (p1->Children_list.size() != 0) {
@@ -71,7 +113,6 @@ void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file
 						temp->F_process = process;
 						Up_data(temp->Pname, name, file_name, mm, mem);
 						p2->Children_list.push_back(temp);
-						check = true;
 						//wyjscie z pierwszej petli (poziom drugi) -> init jest pierwszym
 						p1 = *(Children_list.end() - 1);
 						break;
@@ -79,19 +120,14 @@ void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file
 				}
 			}
 		}
-	}
-	//jak chce stworzyc poziom wyzszy niz 3 to dodaje dziecko do inita
-	if (check == false) {
-		std::cout << "Nie znalazlem procesu o takim ID, tworze proces potomny dla Init'a" << std::endl;
-		Tree *temp = new Tree();
-		temp->F_process = process;
-		Up_data(temp->Pname, name, file_name, mm, mem);
-		Children_list.push_back(temp);
-		check = true;
+		//throw 3;
 	}
 }
 //nadanie wartosci pol w PCB
 void Tree::Up_data(PCB &process, const std::string &name, const std::string &file_name, MemoryManager &mm, const int &mem) {
+	//auto mmem = mm.LoadProgram(file_name, mem, process.PID);
+	//int mmem = 0;
+	//mmem = mm.LoadProgram(file_name, mem, process.PID);
 	process.Process_name = name;
 	process.PID = Free_pid;
 	process.Process_size = mem;
@@ -102,64 +138,72 @@ void Tree::Up_data(PCB &process, const std::string &name, const std::string &fil
 	}
 	process.page_table = mm.createPageTable(mem, process.PID);
 	process.Change_process_state(Ready);
+	//process.Process_size = mmem;
 	Free_pid++;
 }
 //wyswietlenie drzewa
 void Tree::Display_tree() {
-	//std::cout << "Wyswietlenie wszystkich procesow\n" << std::endl;
-	//std::cout << "Proces o nazwie "<<Pname.Process_name<<" o ID: " << Pname.PID << std::endl;
-	//if (Children_list.size() != 0) {
-	//	std::cout << "Jego procesy potomne" << std::endl;
-	//	for (int i = 0; i < Children_list.size(); i++) {
-	//		std::cout << "->Proces " << Children_list[i]->Pname.Process_name << " o numerze ID: " << Children_list[i]->Pname.PID << std::endl;
-	//		if (Children_list[i]->Children_list.size() != 0) {
-	//			for (int j = 0; j < Children_list[i]->Children_list.size(); j++) {
-	//				std::cout << "-->Proces " << Children_list[i]->Children_list[j]->Pname.Process_name << " o numerze ID: "
-	//					<< Children_list[i]->Children_list[j]->Pname.PID << std::endl;
-	//				if (Children_list[i]->Children_list[j]->Children_list.size() != 0) {
-	//					for (int k = 0; k < Children_list[i]->Children_list[j]->Children_list.size(); k++) {
-	//						std::cout << "--->Proces " << Children_list[i]->Children_list[j]->Children_list[k]->Pname.Process_name << " o numerze ID: "
-	//							<< Children_list[i]->Children_list[j]->Children_list[k]->Pname.PID << std::endl;
-	//					}
-	//				}
-	//			}
-	//		}
 
-	//	}
-	//}
-	//zmiany
+	//zmienic
 	std::cout << "Wyswietlenie wszystkich procesow\n" << std::endl;
 	std::cout << "Proces o nazwie "<<Pname.Process_name<<" o ID: " << Pname.PID << std::endl;
 	if (Children_list.size() != 0) {
-		for (auto *p1 : Children_list) {
-			std::cout << "Nazwa procesu:\t" << p1->Pname.Process_name << "\t ID:\t" << p1->Pname.PID << "\tStatus:\t" << p1->Pname.State << std::endl;
+		std::cout << "Jego procesy potomne" << std::endl;
+		for (int i = 0; i < Children_list.size(); i++) {
+			std::cout << "->Proces " << Children_list[i]->Pname.Process_name << " o numerze ID: " << Children_list[i]->Pname.PID << std::endl;
+			if (Children_list[i]->Children_list.size() != 0) {
+				for (int j = 0; j < Children_list[i]->Children_list.size(); j++) {
+					std::cout << "-->Proces " << Children_list[i]->Children_list[j]->Pname.Process_name << " o numerze ID: "
+						<< Children_list[i]->Children_list[j]->Pname.PID << std::endl;
+					if (Children_list[i]->Children_list[j]->Children_list.size() != 0) {
+						for (int k = 0; k < Children_list[i]->Children_list[j]->Children_list.size(); k++) {
+							std::cout << "--->Proces " << Children_list[i]->Children_list[j]->Children_list[k]->Pname.Process_name << " o numerze ID: "
+								<< Children_list[i]->Children_list[j]->Children_list[k]->Pname.PID << std::endl;
+						}
+					}
+				}
+			}
 		}
 	}
 
-
-
 }
 
-
-
-
-
+void Tree::Display_processes() {
+	std::cout << "\nWyswietlenie wszystkich procesow" << std::endl;
+	std::cout << "Proces o nazwie " << Pname.Process_name << " o PID: " << Pname.PID << std::endl;
+	if (Children_list.size() != 0) {
+		for (Tree *p1 : Children_list) {
+			std::cout << "Nazwa procesu:\t" << p1->Pname.Process_name << "\t PID:\t" << p1->Pname.PID << "\tPPID: \t" << Pname.PID << "\tStatus:\t"<< p1->Display_state(p1->Pname.State)<< std::endl;
+			if (p1->Children_list.size() > 0) {
+				for (Tree *p2 : p1->Children_list) {
+					std::cout << "Nazwa procesu:\t" << p2->Pname.Process_name << "\t PID:\t" << p2->Pname.PID << "\tPPID: \t" << p1->Pname.PID << "\tStatus:\t" << p2->Display_state(p2->Pname.State) << std::endl;
+					if (p2->Children_list.size()>0) {
+						for (Tree *p3 : p2->Children_list) {
+							std::cout << "Nazwa procesu:\t" << p3->Pname.Process_name << "\t PID:\t" << p3->Pname.PID << "\tPPID: \t" << p2->Pname.PID << "\tStatus:\t" << p3->Display_state(p3->Pname.State) << std::endl;
+						}
+					}
+				}
+			}
+		}
+	}
+}
 
 //wyswietlenie skladowych procesu
 void Tree::Display_PCB(MemoryManager &mm, PCB* proces) {
 	std::cout << "Proces o nazwie " << proces->Process_name << " ma ID rowne " << proces->PID << std::endl;
-	std::cout << "STATUS:\t" << proces->State << std::endl;
-	std::cout << "Zajmowana pamiec:\t" << proces->Process_size << std::endl;
-	//mm.showPageTable(proces->page_table);
-	std::cout << "Rejestr A:\t" << proces->Reg1 << std::endl;
-	std::cout << "Rejestr B:\t" << proces->Reg2 << std::endl;
-	std::cout << "Rejestr C:\t" << proces->Reg3 << std::endl;
-	std::cout << "Rejestr D:\t" << proces->Reg4 << std::endl;
-	std::cout << "Priorytet:\t" << proces->Priority << std::endl;
+	std::cout << "STATUS:\t\t" << proces->Display_state(proces->State) << std::endl;
+	std::cout << "Rejestr A:\t\t" << proces->Reg1 << std::endl;
+	std::cout << "Rejestr B:\t\t" << proces->Reg2 << std::endl;
+	std::cout << "Rejestr C:\t\t" << proces->Reg3 << std::endl;
+	std::cout << "Rejestr D:\t\t" << proces->Reg4 << std::endl;
+	std::cout << "Priorytet:\t\t" << proces->Priority << std::endl;
 	std::cout << "Priorytet dynamiczny:\t" << proces->Dynamic_priority << std::endl;
 	std::cout << "Licznik rozkazow:\t" << proces->Command_counter << std::endl;
+	std::cout << "Zajmowana pamiec:\t" << proces->Process_size << std::endl;
+	mm.showPageTable(proces->page_table);
 	std::cout << std::endl;
 }
+
 //usuniecie wybranego procesu
 void Tree::Exit(const int &id, MemoryManager &mm, Pipeline &pip) {
 	std::cout << "Usuniecie procesu o id " << id << std::endl;
@@ -331,11 +375,9 @@ PCB& Tree::Get_process(const int &id) {
 			}
 		}
 	}
-	throw 1;
+	throw 2;
 }
-
-
-
+//zwracanie procesu po nazwie
 PCB &Tree::Get_process_1(const std::string &proces_name) {
 	if (proces_name == Pname.Process_name) return Pname;
 	else if (Children_list.size() > 0) {
@@ -355,8 +397,6 @@ PCB &Tree::Get_process_1(const std::string &proces_name) {
 	}
 	throw 1;
 }
-
-
 //lista gotowych procesow
 std::vector<int> Tree::Ready_processes() {
 	std::vector<int> vec;

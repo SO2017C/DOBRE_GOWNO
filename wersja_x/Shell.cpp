@@ -666,7 +666,8 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			}
 			catch (int i)
 			{
-				if (i == 2) std::cout << "There's no process with the " << command_line[2] << " ID" << std::endl;
+				if (i == 2) std::cout << "There's no process with the " << command_line[1] << " ID" << std::endl;
+				if (i == 3) std::cout << "ni ma poziomu"<< std::endl;
 			}
 		}
 		else
@@ -695,8 +696,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 			}
 			catch(int i)
 			{
-				if (i == 0) std::cout << "You cannot look into INIT, it's our's company secret" << std::endl;
-				else if (i == 1) std::cout << "There is not a process with the ID: " << command_line.at(1) << std::endl;
+				if (i == 1) std::cout << "There is not a process with the ID: " << command_line.at(1) << std::endl;
 			}
 		}
 		break;
@@ -912,13 +912,10 @@ void SHELL::are_you_sure()
 SHELL::SHELL(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &planista, Tree &tree, Pipeline &pipeline, HDD &dysk)
 {
 	running = true;
+	planista.check(tree);
 	boot(); // wyswietlenie loga
 	run(inter, mm, pcb, planista, tree, pipeline, dysk);
-	planista.check(/*troll,*/ tree);
 }
 
 
 
-
-
-//"[a-zA-Z_!@#$%^&()+-={}';.,][a-zA-Z0-9_!@#$%^&()+-={}';.,]*

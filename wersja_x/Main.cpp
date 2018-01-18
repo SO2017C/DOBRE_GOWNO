@@ -20,7 +20,7 @@ int main() {
 	tree.F_process = NULL;
 	tree.Pname = *Init;
 	mm.start();
-	tree.Pname.page_table = mm.createPageTable(32, 1);
+	tree.Pname.page_table = mm.createPageTable(16, 1);
 	troll = &tree.Pname;
 	SHELL shell(interp,mm,*troll,plan,tree,pipeline,disk);
 	
