@@ -125,9 +125,7 @@ void Tree::Fork_1(PCB *process, const std::string &name, const std::string &file
 }
 //nadanie wartosci pol w PCB
 void Tree::Up_data(PCB &process, const std::string &name, const std::string &file_name, MemoryManager &mm, const int &mem) {
-	//auto mmem = mm.LoadProgram(file_name, mem, process.PID);
-	//int mmem = 0;
-	//mmem = mm.LoadProgram(file_name, mem, process.PID);
+	double pages = ceil((double)mem / 16);
 	process.Process_name = name;
 	process.PID = Free_pid;
 	process.Process_size = mem;
@@ -138,7 +136,7 @@ void Tree::Up_data(PCB &process, const std::string &name, const std::string &fil
 	}
 	process.page_table = mm.createPageTable(mem, process.PID);
 	process.Change_process_state(Ready);
-	//process.Process_size = mmem;
+	process.Process_size = pages * 16;
 	Free_pid++;
 }
 //wyswietlenie drzewa

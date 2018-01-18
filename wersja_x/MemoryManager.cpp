@@ -175,7 +175,7 @@ int MemoryManager::LoadProgram(std::string path, int mem, int PID) {
 	//Dodanie stronic do pliku wymiany
 	PageFile.insert(std::make_pair(PID, pagevec));
 
-	return 16*pages;
+	return 1;
 }
 
 int MemoryManager::SwapPages(std::vector<PageTableData> *page_table, int pageN, int PID) {
