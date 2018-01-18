@@ -290,7 +290,7 @@ void HDD::format_disk() {
 	}
 
 	directory.erase(directory.begin(), directory.end());
-
+	permissions.delete_all_ACLs();
 	std::cout << "Disk has been formated successfully!\n";
 }
 

@@ -143,7 +143,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		else if (command_line.size() == 3 && are_there_numbers(command_line[2]))                                                    // stworz plik bez tekstu
 		{
 			dysk.create_file(command_line[1], std::stoi(command_line[2]));
-			dysk.permissions.createACL(command_line[1]);//TU IF CZY SIE UDALO STWORZYC!
+			//dysk.permissions.createACL(command_line[1]);//TU IF CZY SIE UDALO STWORZYC!
 												   //uprawnienia.getfacl(command_line[1]);
 		}
 		else if (command_line.size() >= 4 && are_there_numbers(command_line[2]))                                                    // stworz plik z tekstem
@@ -163,7 +163,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 				{
 
 					dysk.create_file(command_line[1], std::stoi(command_line[2]));
-					dysk.permissions.createACL(command_line[1]);
+					//dysk.permissions.createACL(command_line[1]);
 					dysk.write_file(command_line[1], wpisz, 0);
 				}
 				else
@@ -193,13 +193,15 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 2)
 		{
-			if (dysk.permissions.read_permission(command_line[1]) == true) {
-				std::cout << dysk.read_file(command_line[1]) << std::endl;
+
+			std::cout << dysk.read_file(command_line[1]) << std::endl;
+			/*if (dysk.permissions.read_permission(command_line[1]) == true) {
+				
 			}
 			else
 			{
 				std::cout << "User \"" << dysk.permissions.return_log_in_user_name().name << "\" does not have permissions to read that file" << std::endl;
-			}
+			}*/
 
 		}
 		else
@@ -269,14 +271,15 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		else if (command_line.size() == 2)
 		{
-			if (dysk.permissions.exec_permission(command_line[1]) == true) {
-				dysk.delete_file(command_line[1]);
+			dysk.delete_file(command_line[1]);
+			/*if (dysk.permissions.exec_permission(command_line[1]) == true) {
+				
 				dysk.permissions.deleteACL(command_line[1]);
 			}
 			else
 			{
 				std::cout << "User \"" << dysk.permissions.return_log_in_user_name().name << "\" does not have permissions to delete that file" << std::endl;
-			}
+			}*/
 		}
 		else
 		{
@@ -306,7 +309,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		if (command_line.size() == 1)
 		{
 			dysk.format_disk();
-			dysk.permissions.delete_all_ACLs();
+			//dysk.permissions.delete_all_ACLs();
 		}
 		else
 		{
