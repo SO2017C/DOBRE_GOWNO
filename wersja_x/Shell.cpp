@@ -762,6 +762,8 @@ void SHELL::help()
 	std::cout << "WF - writing a content into an existing file" << std::endl;
 	std::cout << "DF - deleting an existing file" << std::endl;
 	std::cout << "RN - changing the name of an existing file" << std::endl;
+	std::cout << "FO - opening a file" << std::endl;
+	std::cout << "FC - closing a file" << std::endl;
 	std::cout << "FD - formatting the whole disk" << std::endl;
 	std::cout << "DD - displaying the informations of disk" << std::endl;
 	std::cout << "USERADD - creating a new user" << std::endl;
@@ -775,6 +777,7 @@ void SHELL::help()
 	std::cout << "USERMOD - adding an existing user to an existing group" << std::endl;
 	std::cout << "GETFACL - getting the file access control list for an existing file" << std::endl;
 	std::cout << "SETFACL - changing or deleting the file access control list for an existing file" << std::endl;
+	std::cout << "CP - creating a new process" << std::endl;
 	std::cout << "CREDITS - displaying creators of the operation system" << std::endl;
 	std::cout << "EXIT - exiting from the operation system" << std::endl << std::endl << std::endl;
 	std::cout << "For further informations type: \"FUNCTION /?\"" << std::endl;
