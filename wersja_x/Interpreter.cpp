@@ -521,11 +521,11 @@
 			int adres = stoi(rej1);
 			std::cout << rej1 << std::endl;
 			
-			if (rejD >= 0)
+			if (rejD > 0)
 			{
 				liczRoz = adres;
 			}
-			rejD--;
+			//rejD--;
 			StanRej();
 			
 			zapiszRejestry(pcb);
@@ -637,18 +637,29 @@
 			zapiszRejestry(pcb);
 
 		}
+		if (operacja == "FO") //otwarcie pliku
+		{
+			rej1 = pobierzRozkaz(mm, pcb);
+			dysk.open_file(rej1);
+			zapiszRejestry(pcb);
+		}
+		if (operacja == "FC") //zamkniecie
+		{
+			rej1 = pobierzRozkaz(mm, pcb);
+			dysk.close_file(rej1);
+			zapiszRejestry(pcb);
+		}
+
 		if (operacja == "ZP") // zapisz do pliku
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			//rej2 = pobierzRozkaz(mm, pcb);
 			std::string tekst;
 			tekst = "RejA: " + std::to_string(rejA) + " RejB: " + std::to_string(rejB) + "RejC: " + std::to_string(rejC);
-			//tekst = pobierzRozkaz(mm,pcb);
 			std::cout << rej1 << "II\n";
 			dysk.write_file(rej1, tekst, 0);
-			//dysk.save_to_file();
 			zapiszRejestry(pcb);
 		}
+
 		if (operacja == "CP") //czytaj plik
 		{
 			rej1 = pobierzRozkaz(mm, pcb);

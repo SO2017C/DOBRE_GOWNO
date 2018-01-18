@@ -2,5 +2,7 @@ MO A 10
 MO B -3
 MO C 2
 CF stanRej 30
+FO stanRej
 ZP stanRej
+FC stanRej
 HT
