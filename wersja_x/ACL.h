@@ -74,6 +74,8 @@ public:
 
 	void createACL(std::string file_name);
 
+	void renameACL(std::string file_old_name, std::string file_new_name);
+
 	void getfacl(std::string file_name);
 
 	bool user_exists_in_ACL(std::string name, std::string file_name);

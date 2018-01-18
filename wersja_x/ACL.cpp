@@ -488,6 +488,18 @@ void Permissions::deleteACL(std::string file_name) {
 
 }
 
+void Permissions::renameACL(std::string file_old_name, std::string file_new_name) {
+	if (ACL_container.find(file_old_name) != ACL_container.end()) {
+		std::map<std::string, ACL>::iterator it;
+		it = ACL_container.find(file_old_name);
+		//ACL_container[file_new_name]
+		//TU PODSTAW NOWA NAZWE
+		std::cout << "PODMIENIAM NAZWE\n";
+	}
+	else std::cout << "This file doesn't exist\n\n";
+
+}
+
 void Permissions::display_all_ACLs()
 {
 	for (auto z : ACL_container)

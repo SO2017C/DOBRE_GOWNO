@@ -242,7 +242,7 @@ void HDD::create_file(std::string file_to_save_name, int file_to_save_size) {
 
 				counter_tmp = counter_tmp + 2; //set new value (jumping to next free cell for data's index)
 			}//end of while
-
+			permissions.createACL(file_to_save_name);///NOWE
 			std::cout << "File was created!\n"; //displaying information about status
 		}// end of if
 		else {
@@ -256,12 +256,23 @@ void HDD::create_file(std::string file_to_save_name, int file_to_save_size) {
 
 void HDD::rename_file(std::string file_old_name, std::string file_new_name) {
 	if (check_file_exist(file_old_name)) {//checking existing of file
-		for (int i = 0; i < directory.size(); i++) {//searching index of file in FAT
-			if (directory[i].file_name == file_old_name) {//looging for file's old name
-				directory[i].file_name = file_new_name;//changing name
-				std::cout << "File's name has been changed successfully!\n";//displaying info
-				break;//breaking loop and ending operation
+		if (permissions.read_permission(file_old_name) == true) {
+			if (check_file_status(file_old_name)==1) {
+				for (int i = 0; i < directory.size(); i++) {//searching index of file in FAT
+					if (directory[i].file_name == file_old_name) {//looging for file's old name
+						directory[i].file_name = file_new_name;//changing name
+						permissions.renameACL(file_old_name, file_new_name);
+						std::cout << "File's name has been changed successfully!\n";//displaying info
+						break;//breaking loop and ending operation
+					}
+				}
 			}
+			else{
+				std::cout << "You have to close file if you want to rename it!\n";
+			}
+		}
+		else {
+			std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to rename that file" << std::endl;
 		}
 	}
 	else {
@@ -289,44 +300,64 @@ std::string HDD::read_file(std::string file_to_read_name) {
 	int residual_size;
 	std::string file_content = "";
 
+	/*if (permissions.read_permission(file_to_read_name) == true) {
+
+	}
+	else
+	{
+		std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to read that file" << std::endl;
+	}*/
+
 	if (check_file_exist(file_to_read_name) == true) {
-		for (int i = 0; i < directory.size(); i++) {
-			if (directory[i].file_name == file_to_read_name) {
-				index_index_block = directory[i].first_block_index;
-				residual_size = directory[i].file_size;
-				break;
-			}//if
+		if (permissions.read_permission(file_to_read_name) == true) {
+			if (check_file_status(file_to_read_name)==0) {
+				for (int i = 0; i < directory.size(); i++) {
+					if (directory[i].file_name == file_to_read_name) {
+						index_index_block = directory[i].first_block_index;
+						residual_size = directory[i].file_size;
+						break;
+					}//if
 
-		}//for
+				}//for
 
-		int i = 0;
-		while (i<block_size - 1 && residual_size>0) {//REFAKTORYZACJA!
+				int i = 0;
+				while (i < block_size - 1 && residual_size>0) {//REFAKTORYZACJA!
 
-			if (i == (block_size - 2) && residual_size > block_size) {
-				actual_index_to_read = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
-				index_index_block = actual_index_to_read;
-				i = 0;
+					if (i == (block_size - 2) && residual_size > block_size) {
+						actual_index_to_read = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
+						index_index_block = actual_index_to_read;
+						i = 0;
+					}
+
+					actual_index_to_read = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
+					for (int j = 0; j < block_size; j++) {
+						if (residual_size <= 0) {
+							break;
+						}
+						if (data_container[actual_index_to_read*block_size + j] == NULL) {
+							residual_size--;
+						}
+						else {
+							file_content = file_content + data_container[actual_index_to_read*block_size + j];
+							residual_size--;
+						}
+
+					}
+					i = i + 2;
+				}
+
+				std::cout << "File was read successfully!\n";
+				return file_content;
 			}
-
-			actual_index_to_read = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
-			for (int j = 0; j < block_size; j++) {
-				if (residual_size <= 0) {
-					break;
-				}
-				if (data_container[actual_index_to_read*block_size + j] == NULL) {
-					residual_size--;
-				}
-				else {
-					file_content = file_content + data_container[actual_index_to_read*block_size + j];
-					residual_size--;
-				}
-
+			else {
+				std::cout << "You have to open file before reading!\n";
+				return "";
 			}
-			i = i + 2;
 		}
-
-		std::cout << "File was opened successfully!\n";
-		return file_content;
+		else {
+			std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to read that file" << std::endl;
+			return "";
+		}
 	}//if
 	else {
 		std::cout << "File of this name doesn't exist!\n";
@@ -343,56 +374,66 @@ void HDD::write_file(std::string file_to_write_name, std::string text_to_write, 
 	std::string file_content = "";
 
 	if (check_file_exist(file_to_write_name) == true) {
-		for (int i = 0; i < directory.size(); i++) {
-			if (directory[i].file_name == file_to_write_name) {
-				index_index_block = directory[i].first_block_index;
-				file_size = directory[i].file_size;
-				break;
-			}//if
-		}//for
+		if (permissions.read_permission(file_to_write_name) == true) {
+			if(check_file_status(file_to_write_name)==0){
+				for (int i = 0; i < directory.size(); i++) {
+					if (directory[i].file_name == file_to_write_name) {
+						index_index_block = directory[i].first_block_index;
+						file_size = directory[i].file_size;
+						break;
+					}//if
+				}//for
 
-		if (indicator_position < file_size) {
-			text_size = text_to_write.size();
-			actual_indicator_position = indicator_position;
-			if (text_to_write.size() + indicator_position <= file_size) {
+				if (indicator_position < file_size) {
+					text_size = text_to_write.size();
+					actual_indicator_position = indicator_position;
+					if (text_to_write.size() + indicator_position <= file_size) {
 
-				int i = 0;
-				while (i<block_size - 1 && text_size >= 0) {//REFAKTORYZACJA!
+						int i = 0;
+						while (i < block_size - 1 && text_size >= 0) {//REFAKTORYZACJA!
 
-					if (i == (block_size - 2) && text_size > block_size) {
-						actual_index_to_write = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
-						index_index_block = actual_index_to_write;
-						i = 0;
-					}
-
-					actual_index_to_write = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
-
-					for (int j = 0; j < block_size; j++) {
-
-						if (actual_indicator_position > 0) {
-							actual_indicator_position--;
-						}
-						else {
-							if (text_size > 0) {//>= jesli pobiera bez \n
-												//std::cout<<"WPISUJE: "<< text_to_write[text_to_write.size() - text_size]-48<<"KONIEC\n";
-								data_container[actual_index_to_write*block_size + j] = text_to_write[text_to_write.size() - text_size];
-								text_size--;
+							if (i == (block_size - 2) && text_size > block_size) {
+								actual_index_to_write = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
+								index_index_block = actual_index_to_write;
+								i = 0;
 							}
 
+							actual_index_to_write = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
+
+							for (int j = 0; j < block_size; j++) {
+
+								if (actual_indicator_position > 0) {
+									actual_indicator_position--;
+								}
+								else {
+									if (text_size > 0) {//>= jesli pobiera bez \n
+														//std::cout<<"WPISUJE: "<< text_to_write[text_to_write.size() - text_size]-48<<"KONIEC\n";
+										data_container[actual_index_to_write*block_size + j] = text_to_write[text_to_write.size() - text_size];
+										text_size--;
+									}
+
+								}
+
+							}
+							i = i + 2;
 						}
 
+						std::cout << "File was write successfully!\n";
 					}
-					i = i + 2;
+					else {
+						std::cout << "Not enough space to write content to file (from indicator position to end of file)\n";
+					}
 				}
-
-				std::cout << "File was write successfully!\n";
+				else {
+					std::cout << "Indicator position is out of range!\n";
+				}
 			}
 			else {
-				std::cout << "Not enough space to write content to file (from indicator position to end of file)\n";
+				std::cout << "You have to open file before writing!\n";
 			}
 		}
 		else {
-			std::cout << "Indicator position is out of range!\n";
+			std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to write that file" << std::endl;
 		}
 	}//if
 	else {
@@ -406,36 +447,46 @@ void HDD::delete_file(std::string file_to_delete_name) {
 	int residual_size;
 
 	if (check_file_exist(file_to_delete_name) == true) {
-		for (int i = 0; i < directory.size(); i++) {
-			if (directory[i].file_name == file_to_delete_name) {
-				index_index_block = directory[i].first_block_index;
-				residual_size = directory[i].file_size;
-				data_container[index_index_block] = '1';
-				std::swap(directory[i], directory[directory.size() - 1]);
-				directory.erase(directory.begin() + (directory.size() - 1));
-				break;
-			}//if
+		if (permissions.read_permission(file_to_delete_name) == true) {
+			if (check_file_status(file_to_delete_name)==1) {
+				for (int i = 0; i < directory.size(); i++) {
+					if (directory[i].file_name == file_to_delete_name) {
+						index_index_block = directory[i].first_block_index;
+						residual_size = directory[i].file_size;
+						data_container[index_index_block] = '1';
+						std::swap(directory[i], directory[directory.size() - 1]);
+						directory.erase(directory.begin() + (directory.size() - 1));
+						break;
+					}//if
 
-		}//for
+				}//for
 
-		int i = 0;
-		while (i<block_size - 1 && residual_size>0) {//REFAKTORYZACJA!
+				int i = 0;
+				while (i < block_size - 1 && residual_size>0) {//REFAKTORYZACJA!
 
-			if (i == (block_size - 2) && residual_size > block_size) {
-				actual_index_to_delete = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
-				data_container[actual_index_to_delete] = '1';
-				index_index_block = actual_index_to_delete;
-				i = 0;
+					if (i == (block_size - 2) && residual_size > block_size) {
+						actual_index_to_delete = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
+						data_container[actual_index_to_delete] = '1';
+						index_index_block = actual_index_to_delete;
+						i = 0;
+					}
+
+					//std::cout << data_container[index_index_block*block_size + i] << "\n";//TEST
+					actual_index_to_delete = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
+					data_container[actual_index_to_delete] = '1';
+					residual_size = residual_size - block_size;
+					i = i + 2;
+				}
+				permissions.deleteACL(file_to_delete_name);///NOWE
+				std::cout << "File was deleted successfully!\n";
 			}
-
-			//std::cout << data_container[index_index_block*block_size + i] << "\n";//TEST
-			actual_index_to_delete = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
-			data_container[actual_index_to_delete] = '1';
-			residual_size = residual_size - block_size;
-			i = i + 2;
+			else {
+				std::cout << "You have to close file before deleting!\n";
+			}
 		}
-
-		std::cout << "File was deleted successfully!\n";
+		else {
+			std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to delete that file" << std::endl;
+		}
 	}//if
 	else {
 		std::cout << "File of this name doesn't exist!\n";
@@ -444,12 +495,18 @@ void HDD::delete_file(std::string file_to_delete_name) {
 
 void HDD::open_file(std::string file_name) {
 	if (check_file_exist(file_name) == true) {
-		if (check_file_status(file_name) == 1) {
-			directory[check_file_index(file_name)].flag = 0;
-			std::cout << "File has been opened successfull!\n";
+		if (permissions.read_permission(file_name) == true) {
+			if (check_file_status(file_name) == 1) {
+				directory[check_file_index(file_name)].flag = 0;
+				directory[check_file_index(file_name)].user = permissions.return_log_in_user_name().name;
+					std::cout << "File has been opened successfull!\n";
+			}
+			else {
+				std::cout << "File is already open!\n";
+			}
 		}
 		else {
-			std::cout << "File is already open!\n";
+			std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to open that file" << std::endl;
 		}
 	}
 	else {
@@ -459,12 +516,22 @@ void HDD::open_file(std::string file_name) {
 
 void HDD::close_file(std::string file_name) {
 	if (check_file_exist(file_name) == true) {
-		if (check_file_status(file_name) == 0) {
-			directory[check_file_index(file_name)].flag = 1;
-			std::cout << "File has been closed successfull!\n";
+		if (permissions.read_permission(file_name) == true) {
+			if (check_file_status(file_name) == 0) {
+				if (directory[check_file_index(file_name)].user == permissions.return_log_in_user_name().name) {
+					directory[check_file_index(file_name)].flag = 1;
+					std::cout << "File has been closed successfull!\n";
+				}
+				else {
+					std::cout << "File is already opened by other user!\n";
+				}
+			}
+			else {
+				std::cout << "File is already close!\n";
+			}
 		}
 		else {
-			std::cout << "File is already close!\n";
+			std::cout << "User \"" << permissions.return_log_in_user_name().name << "\" does not have permissions to close that file" << std::endl;
 		}
 	}
 	else {
