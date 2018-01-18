@@ -3,4 +3,6 @@ XP odbierz 100
 SP wyslij odbierz
 SM wyslij komunikat
 RM odbierz 0 9
+DP wyslij
+DP odbierz
 HT

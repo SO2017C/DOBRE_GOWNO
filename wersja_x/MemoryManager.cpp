@@ -237,7 +237,7 @@ std::string MemoryManager::Get(PCB *process, int LR) {
 		if (process->page_table->at(stronica).bit == 1) {
 			Frame = process->page_table->at(stronica).frame;		//Ramka w ktorej pracuje
 			FrameOrder(Frame);									//uzywam ramki wiec zmieniam jej pozycje na liscie LRU
-			if (RAM[Frame * 16 + LR - (16 * stronica)] == ' ')	//Czytam do napotkania spacji
+			if (RAM[Frame * 16 + LR - (16 * stronica)] == ' ' )	//Czytam do napotkania spacji
 				koniec = true;
 			else
 				order += RAM[Frame * 16 + LR - (16 * stronica)];

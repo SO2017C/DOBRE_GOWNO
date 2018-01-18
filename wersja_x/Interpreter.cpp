@@ -521,13 +521,12 @@
 			int adres = stoi(rej1);
 			std::cout << rej1 << std::endl;
 			
-			if (rejD > 0)
+			if (rejD > 1)
 			{
 				liczRoz = adres;
 			}
 			//rejD--;
 			StanRej();
-			
 			zapiszRejestry(pcb);
 
 
@@ -703,6 +702,16 @@
 			}
 			zapiszRejestry(pcb);
 		}
+
+		if (operacja == "DP") //zabijanie procesu
+		{
+			
+			rej1 = pobierzRozkaz(mm, pcb);
+			planista.make_zombie(tree.Get_process_1(rej1), tree, mm);
+			zapiszRejestry(pcb);
+		}
+
+
 
 		//////////////////
 
