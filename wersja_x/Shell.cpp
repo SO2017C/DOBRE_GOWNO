@@ -274,14 +274,6 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		else if (command_line.size() == 2)
 		{
 			dysk.delete_file(command_line[1]);
-			/*if (dysk.permissions.exec_permission(command_line[1]) == true) {
-				
-				dysk.permissions.deleteACL(command_line[1]);
-			}
-			else
-			{
-				std::cout << "User \"" << dysk.permissions.return_log_in_user_name().name << "\" does not have permissions to delete that file" << std::endl;
-			}*/
 		}
 		else
 		{
