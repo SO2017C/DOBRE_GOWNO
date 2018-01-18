@@ -19,7 +19,6 @@ void Planista::dodaj_do_kolejki(PCB &x) {
 	{
 		x.Dynamic_priority = x.Priority;
 	}
-	&x.PID;
 	int nr = x.Dynamic_priority / 4;
 	mapa_kolejek[nr].push_back(&x);
 	kolejka_bool.at(nr) = true;
@@ -99,9 +98,9 @@ void Planista::run(Tree &t) {
 	}
 	running = x;
 	running->Change_process_state(Running);
-	std::cout << &running->PID <<" [running run] " <<std::endl;
+	//std::cout << &running->PID <<" [running run] " <<std::endl;
 	troll = running;
-	std::cout << &troll->PID << " [running run troll] " << std::endl;
+	//std::cout << &troll->PID << " [running run troll] " << std::endl;
 }
 
 
@@ -132,7 +131,7 @@ void Planista::check(/*PCB *actual,*/ Tree &t) {
 		running = troll;
 	/*	running = actual;*/
 	}
-	std::cout << &running->PID << " running2 " << std::endl;
+	//std::cout << &running->PID << " running2 " << std::endl;
 	if (troll->State == Terminated)
 	{
 		running->PID = NULL;

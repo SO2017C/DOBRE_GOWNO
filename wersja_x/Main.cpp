@@ -16,6 +16,7 @@ int main() {
 	HDD disk;
 	
 	PCB *Init = new PCB(1);
+	Init->Process_name = "Proces bezczynnosci";
 	tree.F_process = NULL;
 	tree.Pname = *Init;
 	mm.start();
