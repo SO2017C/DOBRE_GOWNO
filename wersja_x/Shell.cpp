@@ -35,6 +35,8 @@ SHELL::spis_funkcji SHELL::str_to_int(const std::string & Funkcja)
 	else if (Funkcja == "CP") return CREATEPROCESS;
 	else if (Funkcja == "DTREE") return SHOWTREE;
 	else if (Funkcja == "DPCB") return SHOWPCB;
+	else if (Funkcja == "DPROCESS") return DPROCESSES;
+
 	/// INTERPRETER
 	else if (Funkcja == "GO") return GO;
 	/// MY
@@ -701,7 +703,11 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		}
 		break;
 	}
-	// case SHOWPROCESSES:
+	 case DPROCESSES:
+	 {
+		 tree.Display_processes();
+		 break;
+	 }
 
 	/// INTERPRETER
 	case GO:
