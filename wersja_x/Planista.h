@@ -10,7 +10,7 @@ public:
 	Planista();
 	~Planista();
 	void dodaj_do_kolejki(PCB &x);
-	void check(PCB *actual, Tree &t);
+	void check(/*PCB *actual,*/ Tree &t);
 	//void act(PCB &actual);
 	void make_zombie(PCB &actual, Tree &t, MemoryManager &mm);
 private:

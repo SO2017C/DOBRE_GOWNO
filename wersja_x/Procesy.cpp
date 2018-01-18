@@ -107,7 +107,7 @@ void Tree::Up_data(PCB &process, const std::string &name, const std::string &fil
 //wyswietlenie drzewa
 void Tree::Display_tree() {
 	std::cout << "Wyswietlenie wszystkich procesow\n" << std::endl;
-	std::cout << "Proces Init o ID: " << Pname.PID << std::endl;
+	std::cout << "Proces o nazwie "<<Pname.Process_name<<" o ID: " << Pname.PID << std::endl;
 	if (Children_list.size() != 0) {
 		std::cout << "Jego procesy potomne" << std::endl;
 		for (int i = 0; i < Children_list.size(); i++) {

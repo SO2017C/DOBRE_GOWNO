@@ -19,7 +19,6 @@ void Planista::dodaj_do_kolejki(PCB &x) {
 	{
 		x.Dynamic_priority = x.Priority;
 	}
-	&x.PID;
 	int nr = x.Dynamic_priority / 4;
 	mapa_kolejek[nr].push_back(&x);
 	kolejka_bool.at(nr) = true;
@@ -99,9 +98,9 @@ void Planista::run(Tree &t) {
 	}
 	running = x;
 	running->Change_process_state(Running);
-	std::cout << &running->PID <<" [running run] " <<std::endl;
+	//std::cout << &running->PID <<" [running run] " <<std::endl;
 	troll = running;
-	std::cout << &troll->PID << " [running run troll] " << std::endl;
+	//std::cout << &troll->PID << " [running run troll] " << std::endl;
 }
 
 
@@ -122,22 +121,18 @@ void Planista::make_zombie(PCB &actual, Tree &t, MemoryManager &mm) {
 	t.Exit_1(running->PID, mm);
 }
 
-void Planista::check(PCB *actual, Tree &t) {
-	//if (started == false)
-	//{
-	//	started = true;
-	//	run(t);
-	//	return;
-	//}
-	std::cout << &running->PID << " [running check]" << std::endl;
-	std::cout << actual->PID << " [actual check] " << std::endl;
-	if (actual->State !=Terminated)
+void Planista::check(/*PCB *actual,*/ Tree &t) {
+
+	//std::cout << &running->PID << " [running check]" << std::endl;
+	//std::cout << actual->PID << " [actual check] " << std::endl;
+	if (troll->State !=Terminated)
 	{
-		actual->Change_process_state(Ready);
-		running = actual;
+		troll->Change_process_state(Ready);
+		running = troll;
+	/*	running = actual;*/
 	}
-	std::cout << &running->PID << " running2 " << std::endl;
-	if (actual->State == Terminated)
+	//std::cout << &running->PID << " running2 " << std::endl;
+	if (troll->State == Terminated)
 	{
 		running->PID = NULL;
 	}
@@ -147,7 +142,7 @@ void Planista::check(PCB *actual, Tree &t) {
 	{
 		std::cout << "Start Planisty\n";
 		run(t);
-		*actual = *running;
+		*troll = *running;
 		return;
 	}
 	if (running->PID != NULL)
@@ -156,7 +151,7 @@ void Planista::check(PCB *actual, Tree &t) {
 		powrot_do_kolejki(*running);
 		dzielnik_cpu();
 		run(t);
-		*actual = *running;
+		*troll = *running;
 		return;
 	}
 //	else
