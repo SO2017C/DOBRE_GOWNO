@@ -21,7 +21,6 @@ int main() {
 	mm.start();
 	troll->page_table=mm.createPageTable(32, 1);
 	tree.Pname.page_table = mm.createPageTable(32, 1);
-	plan.check(troll, tree);
 	SHELL shell(interp,mm,*troll,plan,tree,pipeline,disk);
 	
 }

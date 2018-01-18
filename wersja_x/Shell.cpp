@@ -675,7 +675,7 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 	/// INTERPRETER
 	case GO:
 	{
-		planista.check(troll, tree); //ustawianie procesu running
+		planista.check(/*troll,*/ tree); //ustawianie procesu running
 		std::cout << &pcb.PID << " [Shell]\n";
 		inter.WykonajProgram(mm, *troll, planista, tree, pipeline, dysk);
 		break;
@@ -880,6 +880,7 @@ SHELL::SHELL(interpreter &inter, MemoryManager &mm, PCB &pcb, Planista &planista
 	running = true;
 	boot(); // wyswietlenie loga
 	run(inter, mm, pcb, planista, tree, pipeline, dysk);
+	planista.check(/*troll,*/ tree);
 }
 
 
