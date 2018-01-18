@@ -4,7 +4,15 @@
 
 
 
-
+void interpreter::zapiszStanCPU(PCB &pcb)
+{
+	pcb.PID = PID;
+	pcb.Reg1 = rejA;
+	pcb.Reg2 = rejB;
+	pcb.Reg3 = rejC;
+	pcb.Reg4 = rejD;
+	pcb.CPU += liczRoz;                                      // Damian!!!!!!!! dodaje sobie CPU!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
 
 	void interpreter::PobierzRejestry(Planista &planista, PCB &pcb, Tree &tree)  //pobieranie rejestrów z procesu który jest w stanie running
 	{
@@ -636,26 +644,82 @@
 			zapiszRejestry(pcb);
 
 		}
+		//if (operacja == "FO") //otwarcie pliku
+		//{
+		//	rej1 = pobierzRozkaz(mm, pcb);
+		//	dysk.open_file(rej1);
+		//	zapiszRejestry(pcb);
+		//}
+		//if (operacja == "FC") //zamkniecie
+		//{
+		//	rej1 = pobierzRozkaz(mm, pcb);
+		//	dysk.close_file(rej1);
+		//	zapiszRejestry(pcb);
+		//}
+
+		//if (operacja == "ZP") // zapisz do pliku
+		//{
+		//	rej1 = pobierzRozkaz(mm, pcb);
+		//	std::string tekst;
+		//	tekst = "RejA: " + std::to_string(rejA) + " RejB: " + std::to_string(rejB) + "RejC: " + std::to_string(rejC);
+		//	std::cout << rej1 << "II\n";
+		//	dysk.write_file(rej1, tekst, 0);
+		//	zapiszRejestry(pcb);
+		//}
 		if (operacja == "FO") //otwarcie pliku
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			dysk.open_file(rej1);
-			zapiszRejestry(pcb);
+			if (dysk.check_file_opener_permissions(rej1)) {
+				if (fileLocks.test_and_set_file(rej1)) {
+					zapiszStanCPU(pcb);
+				}
+				else {
+					dysk.open_file(rej1);
+					dysk.set_file_opener(rej1, pcb.PID);
+					zapiszRejestry(pcb);
+				}
+			}
+			else {
+				std::cout << "This user doesn't have permission to open this file!" << std::endl;
+				zapiszRejestry(pcb);
+			}
+
 		}
 		if (operacja == "FC") //zamkniecie
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			dysk.close_file(rej1);
+			if (dysk.check_file_opener_permissions(rej1)) {
+				if (dysk.check_file_opener(rej1) == pcb.PID) {
+					fileLocks.unlockFile(rej1);
+					dysk.close_file(rej1);
+				}
+				else {
+					std::cout << "File wasn't open!" << std::endl;
+				}
+			}
+			else {
+				std::cout << "This user doesn't have permission to open this file!" << std::endl;
+			}
 			zapiszRejestry(pcb);
 		}
 
 		if (operacja == "ZP") // zapisz do pliku
 		{
 			rej1 = pobierzRozkaz(mm, pcb);
-			std::string tekst;
-			tekst = "RejA: " + std::to_string(rejA) + " RejB: " + std::to_string(rejB) + "RejC: " + std::to_string(rejC);
-			std::cout << rej1 << "II\n";
-			dysk.write_file(rej1, tekst, 0);
+			if (dysk.check_file_opener_permissions(rej1)) {
+				if (dysk.check_file_opener(rej1) == pcb.PID) {
+					std::string tekst;
+					tekst = "RejA: " + std::to_string(rejA) + " RejB: " + std::to_string(rejB) + "RejC: " + std::to_string(rejC);
+					std::cout << rej1 << "II\n";
+					dysk.write_file(rej1, tekst, 0);
+				}
+				else {
+					std::cout << "File wasn't open!" << std::endl;
+				}
+			}
+			else {
+				std::cout << "This user doesn't have permission to open this file!" << std::endl;
+			}
 			zapiszRejestry(pcb);
 		}
 

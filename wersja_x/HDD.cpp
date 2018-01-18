@@ -570,3 +570,21 @@ void HDD::save_to_file() {
 	HDD_file.close();
 }
 
+void HDD::set_file_opener(std::string file, int pid)
+{
+	openFiles[file] = pid;
+}
+int HDD::check_file_opener(std::string file)
+{
+	if (openFiles.count(file) < 1)return -1;
+	else return openFiles[file];
+}
+void HDD::clear_file_opener(std::string file)
+{
+	openFiles.erase(file);
+}
+
+bool HDD::check_file_opener_permissions(std::string file)
+{
+	return permissions.read_permission(file);
+}

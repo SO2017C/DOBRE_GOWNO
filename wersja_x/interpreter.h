@@ -25,9 +25,10 @@ public:
 	int rejC;
 	int rejD;
 	int liczRoz;
+	Sync fileLocks;
 
 
-
+	void zapiszStanCPU(PCB &pcb);
 
 	void PobierzRejestry(Planista &planista, PCB &pcb, Tree &tree);  //pobieranie rejestrów z procesu który jest w stanie running
 

@@ -25,6 +25,9 @@ private:
 	std::array<char, 1024> data_container;
 	std::vector<FAT_struct> directory;
 
+	//SYNCHRONIZATION
+	std::map<std::string, int>openFiles;
+
 	//BASIC FUNCTIONS
 	bool check_file_exist(std::string file_to_save_name);
 
@@ -50,6 +53,8 @@ private:
 	void percentage_sectors_view();
 
 public:
+
+
 
 	Permissions permissions;//Zmiana
 
@@ -77,5 +82,15 @@ public:
 	void show_all_info();
 
 	void save_to_file();
+
+	//to musi byc  public
+	//SYNCHRONIZATION
+	void set_file_opener(std::string file, int pid);
+
+	int check_file_opener(std::string file);
+
+	void clear_file_opener(std::string file);
+
+	bool check_file_opener_permissions(std::string file);
 
 };//class HDD
