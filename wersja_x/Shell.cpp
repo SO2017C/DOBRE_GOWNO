@@ -14,6 +14,8 @@ SHELL::spis_funkcji SHELL::str_to_int(const std::string & Funkcja)
 	else if (Funkcja == "DF") return DELETEFILE;
 	else if (Funkcja == "RN") return RENAMEFILE;
 	else if (Funkcja == "FD") return FORMATDISK;
+	else if (Funkcja == "FO") return OPENFILE;//NOWE
+	else if (Funkcja == "FC") return CLOSEFILE;//NOWE
 	else if (Funkcja == "DD") return DISPLAYDISK;
 	///ACL
 	else if (Funkcja == "USERADD") return USERADD;
@@ -315,6 +317,40 @@ void SHELL::switch_case(interpreter &inter, MemoryManager &mm, PCB &pcb, Planist
 		{
 			help_class.HELP_F();
 		}
+		break;
+	}
+	case OPENFILE:
+	{
+		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))
+		{
+			help_class.DELETEFILE_H();
+		}
+		else if (command_line.size() == 2)
+		{
+			dysk.open_file(command_line[1]);
+		}
+		else
+		{
+			help_class.HELP_F();
+		}
+
+		break;
+	}
+	case CLOSEFILE:
+	{
+		if (command_line.size() == 1 || (command_line.size() == 2 && command_line[1] == "/?"))
+		{
+			help_class.DELETEFILE_H();
+		}
+		else if (command_line.size() == 2)
+		{
+			dysk.close_file(command_line[1]);
+		}
+		else
+		{
+			help_class.HELP_F();
+		}
+
 		break;
 	}
 	case DISPLAYDISK:

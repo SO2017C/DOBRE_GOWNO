@@ -20,7 +20,7 @@ private:
 	bool running;												// zmienna ktora sprawia, ze petla jest true, wiec dopki ktos nie wpisze "EXIT" to shell bedzie dzialal
 	std::vector<std::string> command_line;						// vector w ktorym przechowujemy: FUNKCJE oraz n-parametrow
 	enum spis_funkcji {
-		CREATEFILE, READFILE, WRITEFILE, DELETEFILE, RENAMEFILE, FORMATDISK, DISPLAYDISK,
+		CREATEFILE, READFILE, WRITEFILE, DELETEFILE, RENAMEFILE, FORMATDISK, OPENFILE, CLOSEFILE, DISPLAYDISK,
 		USERADD, USERDEL, DISPLAYUSERS, GROUPADD, GROUPDEL, DISPLAYGROUPS, SWITCHUSER, USERMOD, GETFACL, SETFACL, DISPLAYACLS,
 		DISPLAYMEMORY,
 		CREATEPROCESS, SHOWTREE, SHOWPCB,

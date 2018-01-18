@@ -99,7 +99,7 @@ void HDD::bit_vector_view() {
 void HDD::directory_view() {
 	std::cout << "Directory view:\n";
 	if (directory.size() == 0) {
-		std::cout << "FAT TABLE IS EMPTY!\n";
+		std::cout << "DIRECTORY IS EMPTY!\n";
 	}//end of if
 	else {
 		for (int i = 0; i < directory.size(); i++) {
@@ -566,8 +566,3 @@ void HDD::save_to_file() {
 	HDD_file.close();
 }
 
-//TO DO
-//void open();
-//void close();
-//void delete_content();
-//void check_atributs();
