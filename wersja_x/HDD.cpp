@@ -376,6 +376,7 @@ void HDD::write_file(std::string file_to_write_name, std::string text_to_write, 
 	if (check_file_exist(file_to_write_name) == true) {
 		if (permissions.read_permission(file_to_write_name) == true) {
 			if(check_file_status(file_to_write_name)==0){
+				if (directory[check_file_index(file_to_write_name)].user == permissions.return_log_in_user_name().name) {
 				for (int i = 0; i < directory.size(); i++) {
 					if (directory[i].file_name == file_to_write_name) {
 						index_index_block = directory[i].first_block_index;
@@ -388,44 +389,47 @@ void HDD::write_file(std::string file_to_write_name, std::string text_to_write, 
 					text_size = text_to_write.size();
 					actual_indicator_position = indicator_position;
 					if (text_to_write.size() + indicator_position <= file_size) {
+							int i = 0;
+							while (i < block_size - 1 && text_size >= 0) {//REFAKTORYZACJA!
 
-						int i = 0;
-						while (i < block_size - 1 && text_size >= 0) {//REFAKTORYZACJA!
-
-							if (i == (block_size - 2) && text_size > block_size) {
-								actual_index_to_write = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
-								index_index_block = actual_index_to_write;
-								i = 0;
-							}
-
-							actual_index_to_write = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
-
-							for (int j = 0; j < block_size; j++) {
-
-								if (actual_indicator_position > 0) {
-									actual_indicator_position--;
+								if (i == (block_size - 2) && text_size > block_size) {
+									actual_index_to_write = ((data_container[(index_index_block * 32) + i] - '0') * 10) + (data_container[(index_index_block * 32) + i + 1] - '0');
+									index_index_block = actual_index_to_write;
+									i = 0;
 								}
-								else {
-									if (text_size > 0) {//>= jesli pobiera bez \n
-														//std::cout<<"WPISUJE: "<< text_to_write[text_to_write.size() - text_size]-48<<"KONIEC\n";
-										data_container[actual_index_to_write*block_size + j] = text_to_write[text_to_write.size() - text_size];
-										text_size--;
+
+								actual_index_to_write = (data_container[index_index_block*block_size + i] - '0') * 10 + (data_container[index_index_block*block_size + i + 1] - '0');
+
+								for (int j = 0; j < block_size; j++) {
+
+									if (actual_indicator_position > 0) {
+										actual_indicator_position--;
+									}
+									else {
+										if (text_size > 0) {//>= jesli pobiera bez \n
+															//std::cout<<"WPISUJE: "<< text_to_write[text_to_write.size() - text_size]-48<<"KONIEC\n";
+											data_container[actual_index_to_write*block_size + j] = text_to_write[text_to_write.size() - text_size];
+											text_size--;
+										}
+
 									}
 
 								}
-
+								i = i + 2;
 							}
-							i = i + 2;
-						}
 
-						std::cout << "File was write successfully!\n";
+							std::cout << "File was write successfully!\n";
+						}
+						else {
+							std::cout << "Not enough space to write content to file (from indicator position to end of file)\n";
+						}
 					}
 					else {
-						std::cout << "Not enough space to write content to file (from indicator position to end of file)\n";
+						std::cout << "Indicator position is out of range!\n";
 					}
 				}
 				else {
-					std::cout << "Indicator position is out of range!\n";
+					std::cout << "The file is opened by other user!!\n";
 				}
 			}
 			else {

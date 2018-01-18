@@ -817,7 +817,7 @@ void SHELL::boot() // wyswietlenie loga
 	std::cin.get();
 	system("cls");
 
-	std::cout << "SOkolowsky [Version 0.10.877]" << std::endl;
+	std::cout << "SOkolowsky [Version 18.01.218]" << std::endl;
 	std::cout << "<c> 2018 SOkolowsky Project Group. Wszelkie prawa zastrzezone." << std::endl;
 }
 void SHELL::credits()
